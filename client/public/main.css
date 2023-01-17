@@ -12,6 +12,7 @@
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+  border-right: 1px solid #ddd;
 }
 
 /* Change the color of links on hover */
@@ -24,4 +25,41 @@
 .topnav a.active {
   background-color: #04AA6D;
   color: white;
+}
+/* Don't create a border on right-most child */
+.topnav a:last-child{
+  border-right: none;
+}
+
+.topnav input,button{
+  float: right;
+}
+
+.maincol{
+  border: 1px solid #333; /* Debug */
+}
+
+.maincol {
+  margin-right: 2%;
+}
+
+.maincol div:last-child{
+  margin-right:none;
+}
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.maincol a {
+  float:left;
+}
+
+.maintopic {
+  margin-top:25px;
+  margin-bottom:25px;
+}
+
+.maintopic last-child{
+  margin-bottom:none;
 }
