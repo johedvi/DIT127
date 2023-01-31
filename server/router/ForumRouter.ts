@@ -33,9 +33,6 @@ forumRouter.put('/', async(
         const title = req.body.title;
         const description = req.body.description;
         const owner = req.body.owner;
-        console.log(title);
-        console.log(description);
-        console.log(owner);
         /* Check for bad input */
         if(typeof(title)!=="string"||
         typeof(description)!=="string"||

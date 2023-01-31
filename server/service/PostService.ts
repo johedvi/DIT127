@@ -29,8 +29,8 @@ export class PostService implements IPostService {
     /* No race condition since Comment objects can't be deleted. */
     async submitComment(comment: Comment): Promise<Boolean> {
         const preLength = this.comments.length;
-        this.comments.push(comment);
-        return this.comments.length>preLength
+        const newLength = this.comments.push(comment);
+        return newLength>preLength;
     }
 
     async upvoteComment(commentID: number): Promise<Boolean> {
