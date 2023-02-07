@@ -1,19 +1,18 @@
-import exp from "constants";
 import express from "express";
 import { Response, Request } from "express";
 import { Forum } from "../model/Forum";
-import { makeForumService } from "../service/ForumService";
+import { makeForumService } from "../service/forumService";
+import { makePostService } from "../service/postService";
 const forumService = makeForumService();
 
 /* Allows this file to be exported/used in index.ts */
 export const forumRouter = express.Router();
 
 forumRouter.use(express.json());
-// const description = req.body.description; // Json/javascript info from GET request
 
 /* Request to retrieve all subforums */
 forumRouter.get('/', async(
-    req: Request<{},{},{}>, /* Pattern match on empty body */
+    req: Request,
     res: Response<Array<Forum> | string>
 ) => {
     try { /* Send back all forums if possible */
@@ -22,7 +21,7 @@ forumRouter.get('/', async(
     } catch(e : any){ /* Else server error */
         res.status(500).send(e.message);
     }
-})
+});
 
 /* Request to create new forum */
 forumRouter.put('/', async(
@@ -43,7 +42,7 @@ forumRouter.put('/', async(
     } catch(e:any){
         res.status(500).send(e.message);
     }
-})
+});
 
 /* Retrieve specific forum on /forum/ID */
 forumRouter.get("/:id",async(
@@ -58,7 +57,7 @@ forumRouter.get("/:id",async(
         const forums = await forumService.getForums(); //Get all forums
         const forum = forums.find(element=>element.title==req.params.id) //Find the specific one
         if(forum==undefined){ // Forum doesn't exist
-            res.status(500).send(`Forum ${req.params.id} not found`);
+            res.status(404).send(`Forum ${req.params.id} not found.`);
             return;
         }
         res.status(200).send(JSON.stringify(forum));
@@ -66,3 +65,42 @@ forumRouter.get("/:id",async(
         res.status(500).send(e.message);
     }
 });
+
+/*
+FORUM SPECIFIC POST HANDLING
+*/
+
+const postService = makePostService();
+
+/* Retrieve all posts inside subforum */
+forumRouter.get('/:id/post',async(
+    req : Request<{id : string},{},{}>,
+    res : Response<string>
+) => {
+    try{
+        const forums = await forumService.getForums();
+        const forum = forums.find(f => req.params.id==f.title);
+        if(forum==undefined){
+            res.status(404).send(`Forum ${req.params.id} not found.`);
+            return;
+        }
+        res.status(200).send(JSON.stringify(forum.posts));
+    }catch(e:any){res.status(500).send(e.message);}
+});
+
+/* Create post in specific subforum */
+forumRouter.put('/:id/post',async(
+    req : Request<{id : string},{},{}>,
+    res : Response<string>
+) =>{
+    try{
+        
+    }catch(e:any){res.status(500).send(e.message);}
+});
+/*
+COMMON RESPONSES
+if(req.params.id==null){
+            res.status(400).send(`Bad GET call to ${req.originalUrl} --- missing id param`);
+            return;
+        }
+*/

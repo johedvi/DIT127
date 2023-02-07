@@ -1,4 +1,4 @@
-import { makeForumService } from "../service/ForumService";
+import { makeForumService } from "./forumService";
 
 test("If a forum is created then it is added to the list of all available forums",
 async()=>{

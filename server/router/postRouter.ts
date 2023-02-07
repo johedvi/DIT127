@@ -1,23 +1,16 @@
 import express, { Request, Response } from "express";
+import { IPostService } from "../service/postService";
 
-const router = express.Router();
+export const postRouter = express.Router();
 
-router.post("/post:id",
+postRouter.get("/",
     async (req : Request, res : Response) => {
-        // Check if allowed to post ...
-        // ... 
-        // Create post
+        const forum = req.params.id;
+        res.status(200).send(forum);
 });
 
-router.get("/post:id",
-    async (req : Request, res : Response) => {
-        // Get post view.
-});
-
-router.delete("/post:id",
+postRouter.delete("/post:id",
     async (req : Request, res : Response) => {
         // ...
         // Delete post
 });
-
-module.exports = router;
