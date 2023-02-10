@@ -4,6 +4,8 @@ export interface IForumService{
     /* Get all available subforums */
     getForums() : Promise<Array<Forum>>;
 
+    findForum(input : string) : Promise<Forum | undefined>
+
     /* Create a subforum */
     createForum(t : string, d : string, o : string) : Promise<Forum>;
 }
@@ -13,6 +15,10 @@ class ForumService implements IForumService{
 
     async getForums(): Promise<Forum[]> {
         return this.forums;
+    }
+
+    async findForum(input : string) : Promise<Forum | undefined>{
+        return this.forums.find((f) => f.title===input);
     }
 
     async createForum(t : string, d : string, o : string): Promise<Forum> {

@@ -1,6 +1,7 @@
 import express from "express";
 import { Response, Request } from "express";
 import { Forum } from "../model/Forum";
+import { Post } from "../model/Post";
 import { makeForumService } from "../service/forumService";
 import { makePostService } from "../service/postService";
 const forumService = makeForumService();
@@ -75,16 +76,22 @@ const postService = makePostService();
 /* Retrieve all posts inside subforum */
 forumRouter.get('/:id/post',async(
     req : Request<{id : string},{},{}>,
-    res : Response<string>
+    res : Response<Post[] | string>
 ) => {
     try{
+        /*
         const forums = await forumService.getForums();
         const forum = forums.find(f => req.params.id==f.title);
         if(forum==undefined){
             res.status(404).send(`Forum ${req.params.id} not found.`);
             return;
+        }*/
+        const exist = await forumService.findForum(req.params.id);
+        if(exist==null){
+            res.status(404).send(`Forum ${req.params.id} not found.`);
+            return;
         }
-        res.status(200).send(JSON.stringify(forum.posts));
+        res.status(200).send(exist.posts);
     }catch(e:any){res.status(500).send(e.message);}
 });
 
