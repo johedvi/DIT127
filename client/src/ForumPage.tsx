@@ -23,7 +23,7 @@ function App() {
   useEffect(()=>{
     async function updateForums(){
     
-    const response = await axios.get<Forum>("http://localhost:3001/forum/"+forumId?.toString());
+    const response = await axios.get<Forum>("http://localhost:8080/forum/"+forumId?.toString());
     setForums(response.data);
     }
     updateForums();

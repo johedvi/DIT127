@@ -20,7 +20,7 @@ function App() {
 
   useEffect(()=>{
     async function updateForums(){
-    const response = await axios.get<Forum[]>("http://localhost:3001/forum");
+    const response = await axios.get<Forum[]>("http://localhost:8080/forum");
     setForums(response.data);
     }
     updateForums();
