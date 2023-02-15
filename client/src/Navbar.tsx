@@ -62,10 +62,9 @@ function Navbar() {
       </nav>
 
       <Routes>
-      <Route path="/" element={<Homepage />}>
-        <Route path="Forums" element={<Forums />}></Route>
-        <Route path="forum/:forumId" element={<ForumPage />}></Route>
-      </Route>
+      <Route path="/" element={<Homepage />}></Route>
+        <Route path="/Forums" element={<Forums />}></Route>
+        <Route path="/forum/:forumId" element={<ForumPage />}></Route>
       </Routes>
     </Router>
 
