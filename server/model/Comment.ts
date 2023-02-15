@@ -1,5 +1,5 @@
 export class Comment {
-    author  : string; //User?
+    author  : string; //User
     content : string;
     rating  : number;
 
@@ -11,8 +11,10 @@ export class Comment {
 
     upvote(){
         this.rating++;
+        return true;
     }
     downvote(){
         this.rating--;
+        return true;
     }
 }

@@ -3,14 +3,14 @@ import { Post } from "./Post";
 export class Forum {
     title       : string;
     description : string;
-    owner       : string;
+    author      : string;
     /* An array of members for this subforum should be here*/
     posts       : Array<Post>;
 
-    constructor(title : string, description : string, owner : string){
+    constructor(title : string, description : string, author : string){
         this.title       = title;
         this.description = description;
-        this.owner       = owner;
+        this.author       = author;
         this.posts       = [];
     }
     /* Retrieve the lists of posts in this subforum */
@@ -20,6 +20,9 @@ export class Forum {
 
     /* Add / publish a post to this subforum */
     addPost(post : Post){
-        this.posts.push(post);
+        const oldLength = this.posts.length;
+        const newLength = this.posts.push(post);
+        if(oldLength>=newLength) return false;
+        return true;
     }
 }

@@ -4,6 +4,7 @@ import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
 import { makeForumService } from "../service/forumService";
 import { makePostService } from "../service/postService";
+import { makeAccountService } from "../service/accountService";
 const forumService = makeForumService();
 
 /* Allows this file to be exported/used in index.ts */
@@ -26,19 +27,19 @@ forumRouter.get('/', async(
 
 /* Request to create new forum */
 forumRouter.put('/', async(
-    req: Request<{},{},{title : string, description : string, owner : string}>,
+    req: Request<{},{},{title : string, description : string, author : string}>,
     res: Response<Forum | string>
 ) => {
     try {
         const title = req.body.title;
         const description = req.body.description;
-        const owner = req.body.owner;
+        const author = req.body.author;
         /* Check for bad input */
         if(typeof(title)!=="string"||
         typeof(description)!=="string"||
-        typeof(owner)!=="string"){res.status(400).send("Bad input");return;}
+        typeof(author)!=="string"){res.status(400).send("Bad input");return;}
         /* Else... */
-        const newForum = await forumService.createForum(title,description,owner);
+        const newForum = await forumService.createForum(title,description,author);
         res.status(201).send(newForum);
     } catch(e:any){
         res.status(500).send(e.message);
@@ -67,11 +68,12 @@ forumRouter.get("/:id",async(
     }
 });
 
-/*
+/*  ***     ***
 FORUM SPECIFIC POST HANDLING
-*/
+    ***     *** */  
 
 const postService = makePostService();
+const accountService = makeAccountService();
 
 /* Retrieve all posts inside subforum */
 forumRouter.get('/:id/post',async(
@@ -79,13 +81,7 @@ forumRouter.get('/:id/post',async(
     res : Response<Post[] | string>
 ) => {
     try{
-        /*
-        const forums = await forumService.getForums();
-        const forum = forums.find(f => req.params.id==f.title);
-        if(forum==undefined){
-            res.status(404).send(`Forum ${req.params.id} not found.`);
-            return;
-        }*/
+        /* Find if the given forum exists, if so retrieve its posts */
         const exist = await forumService.findForum(req.params.id);
         if(exist==null){
             res.status(404).send(`Forum ${req.params.id} not found.`);
@@ -95,13 +91,32 @@ forumRouter.get('/:id/post',async(
     }catch(e:any){res.status(500).send(e.message);}
 });
 
-/* Create post in specific subforum */
+/* Creates a post in a specific subforum */
 forumRouter.put('/:id/post',async(
-    req : Request<{id : string},{},{}>,
+    req : Request<{id : string},{},{title : string, content : string, author : string}>,
     res : Response<string>
 ) =>{
     try{
-        
+        /* Check if forum exists */ 
+        const forumExists = await forumService.findForum(req.params.id);
+        if(forumExists==null){
+            res.status(404).send(`Forum ${req.params.id} not found.`);
+            return;
+        }
+        /* Check if user exists */
+        const userExists = await accountService.userExists(req.body.author);
+        if(userExists==false){
+            res.status(400).send(`User ${req.body.author} does not exist.`);
+            return;
+        }
+        /* Create post and add to forum */
+        const newPost = new Post(req.body.title,req.body.content,req.body.author);
+        const postSuccess = await forumService.submitPost(req.params.id,newPost);
+        if(postSuccess==false){
+            res.status(500).send(`Unable to submit post to ${req.params.id}`);
+            return;
+        }
+        res.status(201).send(JSON.stringify(postSuccess));
     }catch(e:any){res.status(500).send(e.message);}
 });
 /*

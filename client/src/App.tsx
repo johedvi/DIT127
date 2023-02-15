@@ -1,49 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
-interface Forum{
-  title : string;
-  description : string;
-  owner : string;
-  posts : Array<Post>;
+/*
+Site imports
+*/
+import Forums from "./Forums";
+import ForumPage from "./ForumPage";
+
+interface Forum {
+  title: string;
+  description: string;
+  owner: string;
+  posts: Array<Post>;
 }
 
-interface Post{
-  title : string;
-  description : string;
-  comments : [];
+interface Post {
+  title: string;
+  description: string;
+  comments: [];
 }
 
 function App() {
-  const [forums,setForums] = useState<Forum[]>([]);
-
-  useEffect(()=>{
-    async function updateForums(){
-    const response = await axios.get<Forum[]>("http://localhost:3000/forum");
-    setForums(response.data);
-    }
-    updateForums();
-  },[])
+  /* What do to whenever the site updates */
+  useEffect(() => {
+    
+  }, [])
 
   return (
-    <div>
-      <h1> Forums </h1>
-      <ul>
-        {forums.map((forum) => <DisplayForum 
-        key = {forum.title} 
-        title={forum.title} 
-        description={forum.description} 
-        owner={forum.owner} 
-        posts={forum.posts}/>)}
-      </ul>
-    </div>
-  );
+    <Router>
+      <div>
+        <p>Coolt</p>
+      </div>
+      <Routes>
+        <Route path="/" element={<div><p>Hej</p></div>}></Route>
+        <Route path="/forum" element={<Forums/>}></Route>
+        <Route path="/forum/:forumId" element={<ForumPage/>}></Route>
+      </Routes>
+    </Router>
+  )
 }
 
-function DisplayForum(forum : Forum){
-  return <li>{forum.title} - {forum.description}</li>
+function Index(){
+  return (
+    <div>
+      <p>hej</p>
+    </div>
+  )
 }
 
 export default App;

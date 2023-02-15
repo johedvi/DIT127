@@ -8,4 +8,4 @@ export const app = express();
 app.use(express.json());
 app.use(cors());
 app.use("/forum",forumRouter); // Handle all /forum requests
-app.listen(3000);
+app.listen(8080);

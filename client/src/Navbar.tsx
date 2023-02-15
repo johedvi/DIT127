@@ -7,9 +7,6 @@ import {
 } from "react-router-dom";
 import './main.css';
 import Homepage from "./homepage";
-import Home from "./Home";
-import Page1 from "./page1";
-import Page2 from "./page2";
 import Forums from "./Forums";
 import ForumPage from "./ForumPage";
 
@@ -65,12 +62,10 @@ function Navbar() {
       </nav>
 
       <Routes>
-      <Route path="/" element={<Homepage />}></Route>
-        <Route path="/page1" element={<Page1 />}></Route>
-        <Route path="/page2" element={<Page2 />}></Route>
-        <Route path="/Home" element={<Home />}></Route>
-        <Route path="/Forums" element={<Forums />}></Route>
-        <Route path="/forum/:forumId" element={<ForumPage />}></Route>
+      <Route path="/" element={<Homepage />}>
+        <Route path="Forums" element={<Forums />}></Route>
+        <Route path="forum/:forumId" element={<ForumPage />}></Route>
+      </Route>
       </Routes>
     </Router>
 
