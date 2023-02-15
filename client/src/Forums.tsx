@@ -59,13 +59,13 @@ function App() {
             setAuth(e.target.value);
           }} /><br />
           <input type="submit" value="Create" />
-        </form>
+        </form> 
       </div>
     </>
   );
 }
 
 function DisplayForum(forum: Forum) {
-  return <li><a href={'forum/' + forum.title}>{forum.title}</a> - {forum.description}</li>
+  return <li><a href={"/forum/"+forum.title}>{forum.title}</a> - {forum.description}</li>
 }
 export default App;

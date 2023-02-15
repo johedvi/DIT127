@@ -14,18 +14,19 @@ interface Post{
   comments : [];
 }
 function App() {
-  
-  //const page = axios.get<Forum>("hhtp://localhost:3001/forum/${id}")
-
   const { forumId } = useParams();
   const [page,setForums] = useState<Forum>();
 
-  useEffect(()=>{
-    async function updateForums(){
+  const [postTitle, setTitle] = useState<String>();
+  const [postBody, setBody] = useState<String>();
+
+  async function updateForums(){
     
     const response = await axios.get<Forum>("http://localhost:8080/forum/"+forumId?.toString());
     setForums(response.data);
-    }
+  }
+
+  useEffect(()=>{
     updateForums();
   },[])
 
@@ -34,6 +35,20 @@ function App() {
     <>
       <div>
         <h1>{page?.title}</h1>
+        <form onSubmit={async e => {
+          e.preventDefault();
+          await axios.put("http://localhost:8080/forum/"+forumId+"/post", { title: postTitle, content: postBody, author: "John Doe" }); updateForums();
+        }}>
+          <label>Post Title</label>
+          <input type="text" onChange={(e) => {
+            setTitle(e.target.value);
+          }}/>
+          <label>Post Body</label>
+          <input type="text" onChange={(e) => {
+            setBody(e.target.value);
+          }}/>
+          <input type="submit" value="Post!"/>
+        </form>
       </div>
     </>
   );

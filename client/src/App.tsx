@@ -8,6 +8,7 @@ Site imports
 */
 import Forums from "./Forums";
 import ForumPage from "./ForumPage";
+import PostPage from "./PostPage";
 
 interface Forum {
   title: string;
@@ -37,6 +38,7 @@ function App() {
         <Route path="/" element={<div><p>Hej</p></div>}></Route>
         <Route path="/forum" element={<Forums/>}></Route>
         <Route path="/forum/:forumId" element={<ForumPage/>}></Route>
+        <Route path="/forum/:forumId/post/:postId" element={<PostPage/>}></Route>
       </Routes>
     </Router>
   )

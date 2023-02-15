@@ -104,11 +104,11 @@ forumRouter.put('/:id/post',async(
             return;
         }
         /* Check if user exists */
-        const userExists = await accountService.userExists(req.body.author);
+        /*const userExists = await accountService.userExists(req.body.author);
         if(userExists==false){
             res.status(400).send(`User ${req.body.author} does not exist.`);
             return;
-        }
+        }*/
         /* Create post and add to forum */
         const newPost = new Post(req.body.title,req.body.content,req.body.author);
         const postSuccess = await forumService.submitPost(req.params.id,newPost);
@@ -118,6 +118,27 @@ forumRouter.put('/:id/post',async(
         }
         res.status(201).send(JSON.stringify(postSuccess));
     }catch(e:any){res.status(500).send(e.message);}
+});
+
+forumRouter.get("/:id/post/:pid",async(
+    req : Request<{id : string, pid : string},{},{}>,
+    res : Response<Post |String>
+)=>{
+    try{
+        const forumExists = await forumService.findForum(req.params.id);
+        if(forumExists==null){
+            res.status(404).send(`Forum ${req.params.id} not found.`)
+            return;
+        }
+        const post = forumExists.posts.find((p)=>p.title==req.params.pid);
+        if(post==null){
+            res.status(404).send(`Post ${req.params.pid} not found.`);
+            return;
+        }
+        res.status(200).send(post);
+    }catch(e : any){
+        res.status(500).send(`Unable to retrieve post ${req.params.pid} from forum ${req.params.id} with error ${e.message}`);
+    }
 });
 /*
 COMMON RESPONSES
