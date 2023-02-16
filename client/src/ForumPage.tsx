@@ -10,11 +10,13 @@ interface Forum{
 }
 interface Post{
   title : string;
-  description : string;
+  content : string;
   comments : [];
 }
+let forumString : string;
 function App() {
   const { forumId } = useParams();
+  forumString = forumId?.toString()!;
   const [page,setForums] = useState<Forum>();
 
   const [postTitle, setTitle] = useState<String>();
@@ -31,7 +33,6 @@ function App() {
   },[])
 
   return (
-	//import ('./App.css'),
     <>
       <div>
         <h1>{page?.title}</h1>
@@ -49,9 +50,19 @@ function App() {
           }}/>
           <input type="submit" value="Post!"/>
         </form>
+
+        {page?.posts.map((post) => <DisplayPosts
+          key={post.title}
+          title={post.title}
+          content={post.content}
+          comments={post.comments}
+          />)}
       </div>
     </>
   );
 }
 
+function DisplayPosts(post : Post) {
+  return <li><a href={"/forum/"+forumString+"/post/"+post.title}>{post.title}</a></li>
+}
 export default App;

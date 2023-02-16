@@ -30,7 +30,6 @@ function App() {
   }, [])
 
   return (
-    //import ('./App.css'),
     <>
       <div>
         <h1> Forums </h1>

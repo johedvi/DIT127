@@ -9,6 +9,8 @@ Site imports
 import Forums from "./Forums";
 import ForumPage from "./ForumPage";
 import PostPage from "./PostPage";
+import Navbar from './Navbar';
+import Homepage from './homepage';
 
 interface Forum {
   title: string;
@@ -23,33 +25,21 @@ interface Post {
   comments: [];
 }
 
-function App() {
-  /* What do to whenever the site updates */
-  useEffect(() => {
-    
-  }, [])
-
-  return (
-    <Router>
-      <div>
-        <p>Coolt</p>
-      </div>
-      <Routes>
-        <Route path="/" element={<div><p>Hej</p></div>}></Route>
-        <Route path="/forum" element={<Forums/>}></Route>
-        <Route path="/forum/:forumId" element={<ForumPage/>}></Route>
-        <Route path="/forum/:forumId/post/:postId" element={<PostPage/>}></Route>
-      </Routes>
-    </Router>
-  )
+class Start extends React.Component {
+  render() {
+    return (
+      <>
+      <Navbar></Navbar>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Homepage />}></Route>
+          <Route path="/forum" element={<Forums />}></Route>
+          <Route path="/forum/:forumId" element={<ForumPage />}></Route>
+          <Route path="/forum/:forumId/post/:postId" element={<PostPage />}></Route>
+        </Routes>
+      </Router>
+      </>
+    )
+  }
 }
-
-function Index(){
-  return (
-    <div>
-      <p>hej</p>
-    </div>
-  )
-}
-
-export default App;
+export default Start;

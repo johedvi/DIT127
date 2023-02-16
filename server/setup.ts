@@ -9,7 +9,7 @@ const request = superagent;
         const forum1 = {
         title:'Cooking',
         description:'We love to cook food!',
-        owner:'Adam'
+        author:'Adam'
         };
         const post1 = {
         title:'Cooking pasta',
@@ -18,32 +18,28 @@ const request = superagent;
         const comment1 = {
             author:'Noob Cook',
             content:'--------'
-        }
+        };
         const f1 = await request.put("localhost:8080/forum").send(forum1);
-        console.log(f1.statusCode);
         const p1 = await request.put(`localhost:8080/forum/${forum1.title}/post`).send(post1);
-        console.log(p1.statusCode);
+        //const c1 = await request.put(`localhost:8080/forum/${forum1.title}/post`).send(comment1);
 
         const forum2 = {
             title:'Gaming',
             description:'We love to game!',
-            owner:'Gamer1337'
+            author:'Gamer1337'
         };
         const post2 = {
-            title:'Top games',
+            title:'Top games 2013',
             content:'2013',
         };
         const f2 = await request.put("localhost:8080/forum").send(forum2);
-        console.log(f2.statusCode);
         const p2 = await request.put(`localhost:8080/forum/${forum2.title}/post`).send(post2);
-        console.log(p2.statusCode);
 
         const post3 = {
-            title:'Top games',
+            title:'Top games 2022',
             content:'2022',
         };
         const p3 = await request.put(`localhost:8080/forum/${forum2.title}/post`).send(post3);
-        console.log(p3.statusCode);
 
 
 

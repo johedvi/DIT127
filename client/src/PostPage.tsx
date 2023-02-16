@@ -1,16 +1,21 @@
 import axios from "axios";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom"
-
+interface Comment{
+    author : string,
+    content : string,
+    rating : number
+}
 function App(){
     interface Post{
         title : string,
         content : string,
-        author : string
+        author : string,
+        comments : Comment[]
     }
 
     const {forumId, postId} = useParams();
-    const defaultPost = {title : "title", content : "content" , author : "author"}
+    const defaultPost = {title : "title", content : "content" , author : "author", comments : []}
     const [posts, setPosts] = useState<Post>(defaultPost);
 
     async function getPost(){
@@ -20,15 +25,26 @@ function App(){
         const response = await axios.get("http://localhost:8080/forum/"+getForum+"/post/"+getPost);
         setPosts(response.data);
     }
-    getPost();
+    useEffect(()=>{
+        getPost();
+    },[])
+    
     return(
         <div>
             <h1>{postId}</h1>
-            <h2>{posts.title}</h2>
             <h3>{posts.author}</h3>
             <p>{posts.content}</p>
+
+            {posts.comments.map((comment) => <DisplayComment
+                author={comment.author}
+                content={comment.content}
+                rating={comment.rating}
+            />)}
         </div>
     );
 }
 
+function DisplayComment(comment : Comment) {
+    return <li><p>comment.author <br></br>comment.content</p></li>
+}
 export default App;
