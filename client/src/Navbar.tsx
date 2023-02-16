@@ -5,10 +5,10 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import './main.css';
 import Homepage from "./homepage";
 import Forums from "./Forums";
 import ForumPage from "./ForumPage";
-import PostPage from "./PostPage";
 
 
 function Navbar() {
@@ -28,7 +28,7 @@ function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" aria-current="page" to="forum">Forums</Link>
+              <Link className="nav-link" aria-current="page" to="Forums">Forums</Link>
             </li>
             <li className="nav-item">
               <a className="nav-link" aria-current="page" href="#merch">Merch</a>
@@ -55,13 +55,16 @@ function Navbar() {
       </div>
 
         <Link to="Home">Home</Link>
+        <br></br>
+        <Link to="page1">Link to page1</Link>
+        <br></br>
+        <Link to="page2">Link to page2</Link>
       </nav>
 
       <Routes>
       <Route path="/" element={<Homepage />}></Route>
-        <Route path="/forum" element={<Forums />}></Route>
+        <Route path="/Forums" element={<Forums />}></Route>
         <Route path="/forum/:forumId" element={<ForumPage />}></Route>
-        <Route path="/forum/:forumId/post/:postId" element={<PostPage />}></Route>
       </Routes>
     </Router>
 

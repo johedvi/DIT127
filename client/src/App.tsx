@@ -6,7 +6,6 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 /*
 Site imports
 */
-import Navbar from "./Navbar";
 import Forums from "./Forums";
 import ForumPage from "./ForumPage";
 import PostPage from "./PostPage";
@@ -31,7 +30,25 @@ function App() {
   }, [])
 
   return (
-    <Navbar></Navbar>
+    <Router>
+      <div>
+        <p>Coolt</p>
+      </div>
+      <Routes>
+        <Route path="/" element={<div><p>Hej</p></div>}></Route>
+        <Route path="/forum" element={<Forums/>}></Route>
+        <Route path="/forum/:forumId" element={<ForumPage/>}></Route>
+        <Route path="/forum/:forumId/post/:postId" element={<PostPage/>}></Route>
+      </Routes>
+    </Router>
+  )
+}
+
+function Index(){
+  return (
+    <div>
+      <p>hej</p>
+    </div>
   )
 }
 
