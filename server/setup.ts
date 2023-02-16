@@ -21,7 +21,7 @@ const request = superagent;
         };
         const f1 = await request.put("localhost:8080/forum").send(forum1);
         const p1 = await request.put(`localhost:8080/forum/${forum1.title}/post`).send(post1);
-        //const c1 = await request.put(`localhost:8080/forum/${forum1.title}/post`).send(comment1);
+        const c1 = await request.put(`localhost:8080/forum/${forum1.title}/post`).send(comment1);
 
         const forum2 = {
             title:'Gaming',

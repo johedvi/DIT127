@@ -51,6 +51,8 @@ function App() {
           <input type="submit" value="Post!"/>
         </form>
 
+    
+
         {page?.posts.map((post) => <DisplayPosts
           key={post.title}
           title={post.title}
