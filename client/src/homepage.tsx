@@ -1,5 +1,3 @@
-
-
 function Home() {
   return (
     <div className="container-fluid text-center maincontent bganim">

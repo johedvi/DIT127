@@ -6,17 +6,43 @@ const request = superagent;
 /* Create forum with ID Cooking */
 (async () => {
     try{
-        const forumToCreate = {
+        const forum1 = {
         title:'Cooking',
         description:'We love to cook food!',
-        owner:'Adam'
+        author:'Adam'
         };
-        const postToCreate = {
-        
+        const post1 = {
+        title:'Cooking pasta',
+        content:'--------------- 1234',
         };
-        const res1 = await request.put("localhost:8080/forum").send(forumToCreate);
-        console.log(res1.statusCode);
-        /*const res2 = await request.put(`localhost:3000/forum${forumToCreate.title}/post`).send(postToCreate);
-        console.log(res2.statusCode);*/
+        const comment1 = {
+            author:'Noob Cook',
+            content:'--------'
+        };
+        const f1 = await request.put("localhost:8080/forum").send(forum1);
+        const p1 = await request.put(`localhost:8080/forum/${forum1.title}/post`).send(post1);
+        //const c1 = await request.put(`localhost:8080/forum/${forum1.title}/post`).send(comment1);
+
+        const forum2 = {
+            title:'Gaming',
+            description:'We love to game!',
+            author:'Gamer1337'
+        };
+        const post2 = {
+            title:'Top games 2013',
+            content:'2013',
+        };
+        const f2 = await request.put("localhost:8080/forum").send(forum2);
+        const p2 = await request.put(`localhost:8080/forum/${forum2.title}/post`).send(post2);
+
+        const post3 = {
+            title:'Top games 2022',
+            content:'2022',
+        };
+        const p3 = await request.put(`localhost:8080/forum/${forum2.title}/post`).send(post3);
+
+
+
+
     }catch(e:any){console.error(e);}
 })();
