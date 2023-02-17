@@ -2,6 +2,7 @@ import express from "express";
 import { Response, Request } from "express";
 import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
+import { Comment } from "../model/Comment";
 import { makeForumService } from "../service/forumService";
 import { makePostService } from "../service/postService";
 import { makeAccountService } from "../service/accountService";
@@ -140,6 +141,37 @@ forumRouter.get("/:id/post/:pid",async(
         res.status(500).send(`Unable to retrieve post ${req.params.pid} from forum ${req.params.id} with error ${e.message}`);
     }
 });
+
+/* ** **
+    COMMENTING ON A POST RELATED
+    **  ** */
+/* Comment on a specific post */
+forumRouter.put("/:id/post/:pid/comment", async(
+    req : Request<{id : string, pid : string},{},{author : string, content : string}>,
+    res : Response<Comment|String>
+)=>{
+    try{
+        const forumExists = await forumService.findForum(req.params.id);
+        if(forumExists==null){
+            res.status(404).send(`Forum ${req.params.id} not found.`)
+            return;
+        }
+        const post = forumExists.posts.find((p)=>p.title==req.params.pid);
+        if(post==null){
+            res.status(404).send(`Post ${req.params.pid} not found.`);
+            return;
+        }
+        const comment = new Comment(req.body.author,req.body.content);
+        const commented = post.addComment(comment);
+        if(commented==false){
+            res.status(500).send(`Unable to post comment`);
+            return;
+        }
+        res.status(201).send(comment);
+    } catch(e:any){
+        res.status(500).send(`Server error ${e.message}`);
+    }
+})
 /*
 COMMON RESPONSES
 if(req.params.id==null){

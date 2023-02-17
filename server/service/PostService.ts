@@ -28,7 +28,9 @@ export class PostService implements IPostService {
 
     async submitComment(comment: Comment): Promise<Boolean> {
         const preLength = this.comments.length;
+        console.log(this.comments);
         const newLength = this.comments.push(comment);
+        console.log(this.comments);
         return newLength>preLength;
     }
 
