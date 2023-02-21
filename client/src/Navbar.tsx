@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,6 +11,7 @@ import Homepage from "./homepage";
 import Forums from "./Forums";
 import ForumPage from "./ForumPage";
 import PostPage from "./PostPage";
+import AccountPage from "./AccountPage"
 
 
 function Navbar() {
@@ -48,8 +50,17 @@ function Navbar() {
             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
             <button className="btn btn-outline-primary" type="submit">Search</button>
           </form>
+
           <button className="btn btn-outline-secondary" type="submit">COGWHEEL</button>
-          <button className="btn btn-outline-danger" type="submit">Sign in</button>
+          <form action="/auth">
+          <input className="btn btn-outline-danger" type="submit" value="Sign in"/>
+          </form>
+       
+       
+         
+       
+         
+
         </div>
       </div>
     </nav></>
