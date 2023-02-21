@@ -12,6 +12,8 @@ import PostPage from "./PostPage";
 import Navbar from './Navbar';
 import Homepage from './homepage';
 
+axios.defaults.withCredentials = true; // For session cookies
+
 interface Forum {
   title: string;
   description: string;

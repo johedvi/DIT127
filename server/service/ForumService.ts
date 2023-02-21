@@ -33,8 +33,9 @@ class ForumService implements IForumService{
         return forum;
     }
     
-    async submitPost(f: string, p: Post): Promise<Boolean | Forum> {
-        const forumExists = this.forums.find((forum)=>forum.title==f);
+    /* string 'f' is the forum in question for the post to be submitted to. */
+    async submitPost(forum: string, p: Post): Promise<Boolean | Forum> {
+        const forumExists = this.forums.find((f)=>f.title==forum);
         if(forumExists==null){
             return false;
         }

@@ -4,7 +4,6 @@ import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
 import { Comment } from "../model/Comment";
 import { makeForumService } from "../service/forumService";
-import { makePostService } from "../service/postService";
 import { makeAccountService } from "../service/accountService";
 const forumService = makeForumService();
 
@@ -73,9 +72,6 @@ forumRouter.get("/:id",async(
 FORUM SPECIFIC POST HANDLING
     ***     *** */  
 
-const postService = makePostService();
-const accountService = makeAccountService();
-
 /* Retrieve all posts inside subforum */
 forumRouter.get('/:id/post',async(
     req : Request<{id : string},{},{}>,
@@ -105,11 +101,7 @@ forumRouter.put('/:id/post',async(
             return;
         }
         /* Check if user exists */
-        /*const userExists = await accountService.userExists(req.body.author);
-        if(userExists==false){
-            res.status(400).send(`User ${req.body.author} does not exist.`);
-            return;
-        }*/
+
         /* Create post and add to forum */
         const newPost = new Post(req.body.title,req.body.content,req.body.author);
         const postSuccess = await forumService.submitPost(req.params.id,newPost);
@@ -121,6 +113,7 @@ forumRouter.put('/:id/post',async(
     }catch(e:any){res.status(500).send(e.message);}
 });
 
+/* Retrieve a post in a specific subforum */
 forumRouter.get("/:id/post/:pid",async(
     req : Request<{id : string, pid : string},{},{}>,
     res : Response<Post |String>

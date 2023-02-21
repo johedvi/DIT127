@@ -18,7 +18,7 @@ class AccountService implements IAccountService{
     accounts : Array<Account> = [];
 
     /* Create a new account */
-    async createAccount(u: string, p: string): Promise<boolean | Account> {
+    async createAccount(u: string, p: string): Promise<false | Account> {
         const nameTaken = this.accounts.find((acc)=>acc.username===u);
         if(nameTaken===undefined){
             const newAccount = new Account(u,p);
@@ -35,7 +35,7 @@ class AccountService implements IAccountService{
     }
 
     /* Checks if a user exists, returns the account if so */
-    async userExists(a: string): Promise<boolean | Account> {
+    async userExists(a: string): Promise<false | Account> {
         const exists = this.accounts.find((acc)=>acc.username===a);
         if(exists==null){
             return false;
