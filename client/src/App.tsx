@@ -11,6 +11,7 @@ import ForumPage from "./ForumPage";
 import PostPage from "./PostPage";
 import Navbar from './Navbar';
 import Homepage from './homepage';
+import AccountPage from './AccountPage';
 
 axios.defaults.withCredentials = true; // For session cookies
 
@@ -38,6 +39,7 @@ class Start extends React.Component {
           <Route path="/forum" element={<Forums />}></Route>
           <Route path="/forum/:forumId" element={<ForumPage />}></Route>
           <Route path="/forum/:forumId/post/:postId" element={<PostPage />}></Route>
+          <Route path="/auth" element={<AccountPage />}></Route>
         </Routes>
       </Router>
       </>
