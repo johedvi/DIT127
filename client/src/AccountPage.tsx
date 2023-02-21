@@ -1,8 +1,12 @@
+import axios from "axios";
 import React, { useState } from "react"
 
 
 export default function (props: {}) {
-  let [authMode, setAuthMode] = useState("signin")
+  const [authMode, setAuthMode] = useState("signin")
+  const [userName, setUserName] = useState("");
+  const [passWord, setPassWord] = useState("");
+  const [userMail, setUserMail] = useState("");
 
   const changeAuthMode = () => {
     setAuthMode(authMode === "signin" ? "signup" : "signin")
@@ -11,7 +15,20 @@ export default function (props: {}) {
   if (authMode === "signin") {
     return (
       <div className="Auth-form-container">
-        <form className="Auth-form">
+        <form className="Auth-form" onSubmit={async e=>{
+          e.preventDefault();
+          try{
+            /* Attempt to login - fails if username does not exist or password is incorrect */
+          const response = await axios.post("http://localhost:8080/login",
+          {
+            username : userName,
+            password : passWord
+          })
+        }
+        catch(e:any){
+
+        }
+        }}>
           <div className="Auth-form-content">
             <h3 className="Auth-form-title">Sign In</h3>
             <div className="text-center">
@@ -22,7 +39,9 @@ export default function (props: {}) {
             </div>
             <div className="form-group mt-3">
               <label>Email address</label>
-              <input
+              <input onChange={(e)=>{
+                setUserMail(e.target.value);
+              }}
                 type="email"
                 className="form-control mt-1"
                 placeholder="Enter email"
@@ -30,7 +49,9 @@ export default function (props: {}) {
             </div>
             <div className="form-group mt-3">
               <label>Password</label>
-              <input
+              <input onChange={(e)=>{
+                setPassWord(e.target.value);
+              }}
                 type="password"
                 className="form-control mt-1"
                 placeholder="Enter password"
