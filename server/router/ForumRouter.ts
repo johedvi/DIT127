@@ -91,7 +91,7 @@ forumRouter.get('/:id/post',async(
 /* Creates a post in a specific subforum */
 forumRouter.put('/:id/post',async(
     req : Request<{id : string},{},{title : string, content : string, author : string}>,
-    res : Response<string>
+    res : Response<Forum | String>
 ) =>{
     try{
         /* Check if forum exists */ 
@@ -105,11 +105,11 @@ forumRouter.put('/:id/post',async(
         /* Create post and add to forum */
         const newPost = new Post(req.body.title,req.body.content,req.body.author);
         const postSuccess = await forumService.submitPost(req.params.id,newPost);
-        if(postSuccess==false){
+        if(postSuccess===false){
             res.status(500).send(`Unable to submit post to ${req.params.id}`);
             return;
         }
-        res.status(201).send(JSON.stringify(postSuccess));
+        res.status(201).send(postSuccess);
     }catch(e:any){res.status(500).send(e.message);}
 });
 

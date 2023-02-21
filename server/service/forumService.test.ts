@@ -1,4 +1,6 @@
+import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
+import { Comment } from "../model/Comment";
 import { makeForumService } from "./forumService";
 const forumService = makeForumService();
 
@@ -21,7 +23,27 @@ async()=>{
     await forumService.submitPost("Cooking",post);
     const forum = await forumService.findForum("Cooking");
     if(forum === undefined){ /* Should be able to retrieve forum */
-        expect(forum).toBe(!undefined);
+        expect(forum).toBe(!undefined); // Should exist, if not return as failure!
     }
-    
+    else{
+        expect(forum.posts.some((p=>post.title==t))).toBeTruthy();
+    }
+})
+
+test("If a comment is made on a post then it will be added to that specific posts' list of comments.",
+async()=>{
+    const author = "John Bull";
+    const content = "Tastes awful";
+    const comment = new Comment(author,content);
+    const forums = await forumService.getForums();
+    const forumSpecific = forums.find((f)=>f.title==="Cooking");
+    const postSpecific = forumSpecific?.posts.find((p)=>p.title=="My recipe");
+    const result = postSpecific?.addComment(comment);
+    const findComment = postSpecific?.comments.find((t)=>t.author==author&&t.content==content);
+    if(!result){
+        expect(findComment).toBe(!undefined); // Comment should exist, we want this to return as a failure!
+    }
+    else{
+        expect(findComment).toBe(comment);
+    }
 })

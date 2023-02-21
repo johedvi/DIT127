@@ -13,7 +13,7 @@ export interface IForumService{
 
     /* Submits a post to a subforum. 
     Returns updated forum object if successful, boolean false otherwise */
-    submitPost(f : string, p : Post) : Promise<Boolean | Forum>;
+    submitPost(f : string, p : Post) : Promise<false | Forum>;
 }
 
 class ForumService implements IForumService{
@@ -34,7 +34,7 @@ class ForumService implements IForumService{
     }
     
     /* string 'f' is the forum in question for the post to be submitted to. */
-    async submitPost(forum: string, p: Post): Promise<Boolean | Forum> {
+    async submitPost(forum: string, p: Post): Promise<false | Forum> {
         const forumExists = this.forums.find((f)=>f.title==forum);
         if(forumExists==null){
             return false;
