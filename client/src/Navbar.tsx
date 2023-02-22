@@ -52,7 +52,7 @@ function Navbar() {
           </form>
 
           <button className="btn btn-outline-secondary" type="submit">COGWHEEL</button>
-          <form action="/auth">
+          <form action="/login">
           <input className="btn btn-outline-danger" type="submit" value="Sign in"/>
           </form>
        

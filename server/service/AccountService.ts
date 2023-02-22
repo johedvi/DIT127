@@ -1,13 +1,13 @@
 import { Account } from "../model/Account";
 export interface IAccountService {
     /* Create an account with a unique username */
-    createAccount(u : string, p : string) : Promise<Account | boolean>;
+    createAccount(u : string, p : string) : Promise<Account | false>;
 
-    /* Retrieve non-confidential information on a user */
-    getPublicInfo() : Promise<String[]>;
+    /* Checks if a specified username is already taken */
+    usernameTaken(u : string) : Promise<boolean>;
 
     /* Check if a user exists */
-    userExists(a : string) : Promise<Account | boolean>;
+    userExists(a : string) : Promise<Account | false>;
 
     // Change a users account password. True if successful.
     // False if new password don't meet requirements.
@@ -28,10 +28,13 @@ class AccountService implements IAccountService{
         return false; // Name taken
     }
 
-    /* Retrieve all existing usernames */
-    async getPublicInfo(): Promise<String[]> {
-        const usernames = this.accounts.map((acc)=>acc.username);
-        return usernames;
+    /* Checks if a username is taken */
+    async usernameTaken(name : string): Promise<boolean> {
+        const taken = this.accounts.find((u)=>u.username==name);
+        if(taken===undefined){
+            return false;
+        }
+        return true;
     }
 
     /* Checks if a user exists, returns the account if so */

@@ -1,55 +1,72 @@
 import axios from "axios";
 import React, { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
+interface Account {
+  username : string
+  password : string
+}
 
 export default function (props: {}) {
-  const [authMode, setAuthMode] = useState("signin")
+  const navigate=useNavigate();
+  enum pageType {
+    signin,
+    signup,
+  }
+  enum errorType{
+    none,
+    signin,
+    signup,
+  }
+  const [authMode, setAuthMode] = useState(pageType.signin);
+  const [errorMode,setErrorMode] = useState(errorType.none);
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
-  const [userMail, setUserMail] = useState("");
 
-  const changeAuthMode = () => {
-    setAuthMode(authMode === "signin" ? "signup" : "signin")
+  const changeAuthMode = (toType: pageType) => {
+    setAuthMode(toType);
   }
 
-  if (authMode === "signin") {
+  function signin() {
     return (
       <div className="Auth-form-container">
-        <form className="Auth-form" onSubmit={async e=>{
+        <form className="Auth-form" onSubmit={async e => {
           e.preventDefault();
-          try{
+          try {
             /* Attempt to login - fails if username does not exist or password is incorrect */
-          const response = await axios.post("http://localhost:8080/login",
-          {
-            username : userName,
-            password : passWord
-          })
-        }
-        catch(e:any){
-
-        }
+            const response = await axios.post("http://localhost:8080/login",
+              {
+                username: userName,
+                password: passWord
+              })
+              navigate("/forum");
+          }
+          catch (e: any) {
+            console.log(e.code);
+            //alert("Incorrect username or password");
+          }
         }}>
           <div className="Auth-form-content">
             <h3 className="Auth-form-title">Sign In</h3>
             <div className="text-center">
               Not registered yet?{" "}
-              <span className="link-primary" onClick={changeAuthMode}>
+              <span className="link-primary" onClick={() => changeAuthMode(pageType.signup)}>
                 Sign Up
               </span>
             </div>
             <div className="form-group mt-3">
-              <label>Email address</label>
-              <input onChange={(e)=>{
-                setUserMail(e.target.value);
+              <label>Username</label>
+              <input onChange={(e) => {
+                setUserName(e.target.value);
               }}
-                type="email"
+                type="username"
                 className="form-control mt-1"
-                placeholder="Enter email"
+                placeholder="Enter username"
               />
             </div>
             <div className="form-group mt-3">
               <label>Password</label>
-              <input onChange={(e)=>{
+              <input onChange={(e) => {
                 setPassWord(e.target.value);
               }}
                 type="password"
@@ -71,51 +88,70 @@ export default function (props: {}) {
     )
   }
 
-  return (
-    <div className="Auth-form-container">
-      <form className="Auth-form">
-        <div className="Auth-form-content">
-          <h3 className="Auth-form-title">Sign In</h3>
-          <div className="text-center">
-            Already registered?{" "}
-            <span className="link-primary" onClick={changeAuthMode}>
-              Sign In
-            </span>
+  function signup() {
+    return (
+      <div className="Auth-form-container">
+        <form className="Auth-form" onSubmit={async e =>{
+          try{
+            e.preventDefault();
+            const response : Response = await axios.put("http://localhost:8080/login",
+            {
+              username : userName,
+              password : passWord
+            })
+            navigate("/forum");
+          }catch(e:any){
+            console.log(e.message);
+            console.log(e.code);
+            alert("Error at sign up");
+          }
+        }}>
+          <div className="Auth-form-content">
+            <h3 className="Auth-form-title">Sign Up</h3>
+            <div className="text-center">
+              Already registered?{" "}
+              <span className="link-primary" onClick={() => changeAuthMode(pageType.signin)}>
+                Sign In
+              </span>
+            </div>
+            <div className="form-group mt-3">
+              <label>Username</label>
+              <input onChange={(e)=>{
+                setUserName(e.target.value);
+              }}
+                type="username"
+                className="form-control mt-1"
+                placeholder="Username"
+              />
+            </div>
+            <div className="form-group mt-3">
+              <label>Password</label>
+              <input onChange={(e)=>{
+                setPassWord(e.target.value);
+              }}
+                type="password"
+                className="form-control mt-1"
+                placeholder="Password"
+              />
+            </div>
+            <div className="d-grid gap-2 mt-3">
+              <button type="submit" className="btn btn-primary">
+                Submit
+              </button>
+            </div>
+            <p className="text-center mt-2">
+              Forgot <a href="#">password?</a>
+            </p>
           </div>
-          <div className="form-group mt-3">
-            <label>Full Name</label>
-            <input
-              type="email"
-              className="form-control mt-1"
-              placeholder="e.g Jane Doe"
-            />
-          </div>
-          <div className="form-group mt-3">
-            <label>Email address</label>
-            <input
-              type="email"
-              className="form-control mt-1"
-              placeholder="Email Address"
-            />
-          </div>
-          <div className="form-group mt-3">
-            <label>Password</label>
-            <input
-              type="password"
-              className="form-control mt-1"
-              placeholder="Password"
-            />
-          </div>
-          <div className="d-grid gap-2 mt-3">
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-          </div>
-          <p className="text-center mt-2">
-            Forgot <a href="#">password?</a>
-          </p>
-        </div>
-      </form>
-    </div>
-  )
+        </form>
+      </div>
+    )
+  }
+
+  if (authMode === pageType.signin) {
+    return signin();
+  }
+  else {
+    return signup();
+  }
 }
