@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react"
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface Account {
   username : string
@@ -8,6 +8,7 @@ interface Account {
 }
 
 export default function (props: {}) {
+  const navigate=useNavigate();
   enum pageType {
     signin,
     signup,
@@ -26,20 +27,6 @@ export default function (props: {}) {
     setAuthMode(toType);
   }
 
-  function ErrorSignIn(){
-    if(errorMode === errorType.signin){
-      return (
-        <p>Error during sign in</p>
-      )
-    }
-    else if(errorMode === errorType.signup){
-      return (
-        <p>Error during sign up</p>
-      )
-    }
-    else return <></>
-  }
-
   function signin() {
     return (
       <div className="Auth-form-container">
@@ -52,9 +39,11 @@ export default function (props: {}) {
                 username: userName,
                 password: passWord
               })
+              navigate("/forum");
           }
           catch (e: any) {
-            alert("Error");
+            console.log(e.code);
+            //alert("Incorrect username or password");
           }
         }}>
           <div className="Auth-form-content">
@@ -110,17 +99,10 @@ export default function (props: {}) {
               username : userName,
               password : passWord
             })
-            if(response.status===400){ // Malformed input
-              alert("Illegal characters in username or password");
-            }
-            else if(response.status===409){ // Chosen username taken by someone else already
-              alert("Username is already taken.");
-            }
-            else{ // Successful login, redirect to home page
-              redirect("/forum");
-            }
+            navigate("/forum");
           }catch(e:any){
             console.log(e.message);
+            console.log(e.code);
             alert("Error at sign up");
           }
         }}>

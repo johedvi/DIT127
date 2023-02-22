@@ -21,7 +21,7 @@ type LoginRequest = Request & {
 }
 
 /*  */  
-userRouter.get("/login", async(
+userRouter.get("/", async(
         req : Request<{},{},{}>, 
         res : Response
         ) => {
@@ -33,7 +33,7 @@ userRouter.get("/login", async(
 });
 
 /* Log into an existing account */
-userRouter.post("/login", async(
+userRouter.post("/", async(
         req : LoginRequest,
         res : Response
 )=>{
@@ -59,9 +59,7 @@ userRouter.post("/login", async(
 });
 
 /* Create a new account */
-userRouter.put("/login", async (req : Request<{},{},{username : string, password : string}>, res : Response<Account | String>) => {
-        console.log("Attempt to login");
-        console.log(req);
+userRouter.put("/", async (req : Request<{},{},{username : string, password : string}>, res : Response<Account | String>) => {
         try{
                 if(typeof (req.body.username) !== "string"){
                         res.status(400).send(`Bad PUT to login - username is not of type 'string'.`);
