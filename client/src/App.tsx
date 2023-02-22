@@ -39,7 +39,7 @@ class Start extends React.Component {
           <Route path="/forum" element={<Forums />}></Route>
           <Route path="/forum/:forumId" element={<ForumPage />}></Route>
           <Route path="/forum/:forumId/post/:postId" element={<PostPage />}></Route>
-          <Route path="/auth" element={<AccountPage />}></Route>
+          <Route path="/login" element={<AccountPage />}></Route>
         </Routes>
       </Router>
       </>

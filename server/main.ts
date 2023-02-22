@@ -12,7 +12,7 @@ app.use(express.static("../client/public/"));
 app.use(require("./router/indexRouter"));
 app.use(require("./router/homepageRouter"));
 app.use(require("./router/postRouter"));
-app.use(require("./router/accountRouter"));
+app.use(require("./router/userRouter"));
 
 
 app.get("/",
