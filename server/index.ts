@@ -1,6 +1,6 @@
 import express from "express";
 import { forumRouter } from "./router/forumRouter";
-import { loginRouter } from "./router/loginRouter";
+import { userRouter } from "./router/userRouter";
 import session from "express-session";
 import cors from "cors";
 export const app = express();
@@ -17,6 +17,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use("/forum",forumRouter); // Handle all /forum requests
-app.use("/login",loginRouter);
+app.use("/login",userRouter);
 app.listen(8080);
 //app.use("/forum/:forumId/post", postRouter); // TODO : shared forumService between forum and post router required

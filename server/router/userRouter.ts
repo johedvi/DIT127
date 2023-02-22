@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import session from "express-session";
 import { makeAccountService } from "../service/accountService";
-export const loginRouter = express.Router();
+export const userRouter = express.Router();
 
 const accountService = makeAccountService();
 
@@ -21,12 +21,19 @@ type LoginRequest = Request & {
 }
 
 
-loginRouter.get("/login", (req : Request, res : Response) => {
-        // ....
-        // Return login view
+userRouter.get("/login", async(
+        req : Request<{},{},{}>, 
+        res : Response
+        ) => {
+        try{
+
+        }catch(e: any){
+                res.status(500).send("Bad response from Login page - server error");
+        }
 });
 
-loginRouter.post("/login", async(
+/* Log into an existing account */
+userRouter.post("/login", async(
         req : LoginRequest,
         res : Response
 )=>{
@@ -52,7 +59,7 @@ loginRouter.post("/login", async(
 });
 
 /* Create a new account */
-loginRouter.put("/login", async (req : Request, res : Response<Account | String>) => {
+userRouter.put("/login", async (req : Request, res : Response<Account | String>) => {
         try{
                 if(typeof (req.body.username) !== "string"){
                         res.status(400).send(`Bad PUT to login - username is not of type 'string'.`);
