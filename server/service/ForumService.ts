@@ -1,5 +1,6 @@
 import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
+import { forumModel } from "../db/forum.db"
 
 export interface IForumService{
     /* Get all available subforums in an array */
@@ -9,11 +10,34 @@ export interface IForumService{
     findForum(input : string) : Promise<Forum | undefined>
 
     /* Creates a subforum and returns it */
-    createForum(t : string, d : string, o : string) : Promise<Forum>;
+    createForum(t : string, d : string, a : string) : Promise<Forum>;
 
     /* Submits a post to a subforum. 
     Returns updated forum object if successful, boolean false otherwise */
     submitPost(f : string, p : Post) : Promise<false | Forum>;
+}
+
+class ForumDBService implements IForumService{
+    async getForums(): Promise<Forum[]> {
+        return await forumModel.find();
+    }
+
+    async findForum(input: string): Promise<Forum | undefined> {
+        return await forumModel.find();
+    }
+
+    async createForum(t: string, d: string, a: string): Promise<Forum> {
+        return await forumModel.create({
+            title : t,
+            description : d,
+            author : a,
+            posts : []
+        })
+    }
+
+    async submitPost(f: string, p: Post): Promise<false | Forum> {
+        return await forumModel.
+    }
 }
 
 class ForumService implements IForumService{
