@@ -1,5 +1,6 @@
 import { Post } from "../model/Post";
 import { Comment } from "../model/Comment";
+import { postModel } from "../db/post.db";
 
 export interface IPostService {
     // Returns a list of comments inside a forum post.
@@ -8,7 +9,7 @@ export interface IPostService {
     // Returns true if a comment is made successfully on a post.
     // Returns false otherwise.
     // Comment objects can't be deleted, only their content/body.
-    submitComment(comment : Comment) : Promise<Boolean>;
+    submitComment(post : Post, comment : Comment) : Promise<Boolean>;
 
     // Upvotes the comment on index n inside the post and returns true.
     // Returns false if no comment with index n.
@@ -19,38 +20,31 @@ export interface IPostService {
     downvoteComment(n : number) : Promise<Boolean>;
 }
 
-export class PostService implements IPostService {
-    comments : Array<Comment> = [];
+class PostDBService implements IPostService{
 
+    /* Returns all comments on a post */
     async getComments(): Promise<Comment[]> {
-        return this.comments;
+        return await postModel.find();
     }
 
-    async submitComment(comment: Comment): Promise<Boolean> {
-        const preLength = this.comments.length;
-        console.log(this.comments);
-        const newLength = this.comments.push(comment);
-        console.log(this.comments);
-        return newLength>preLength;
+    /* Adds a comment to a post, returns true if added false otherwise */
+    async submitComment(post : Post, comment: Comment): Promise<Boolean> {
+        const query = {id : post.id}; // forum : post.forum
+        const result =  await postModel.updateOne(query,{$push: {comments : comment}});
+        return result.acknowledged;
     }
 
-    async upvoteComment(commentID: number): Promise<Boolean> {
-        if(commentID>=this.comments.length){ // Out of bounds
-            return false;
-        }
-        this.comments[commentID].upvote();
-        return true;
+    /* Upvotes a comment, returns true if successful false otherwise*/
+    async upvoteComment(n: number): Promise<Boolean> {
+        
     }
 
-    async downvoteComment(commentID: number): Promise<Boolean> {
-        if(commentID>=this.comments.length){
-            return false;
-        }
-        this.comments[commentID].downvote();
-        return true;
+    /* Downvotes a comment, returns true if successful false otherwise */
+    async downvoteComment(n: number): Promise<Boolean> {
+        
     }
 }
 
 export function makePostService() : IPostService{
-    return new PostService();
+    return new PostDBService();
 }

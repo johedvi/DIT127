@@ -1,6 +1,14 @@
 import express, { Express, Request, Response } from "express";
+import mongoose from "mongoose";
 
 const app : Express = express();
+// Set up mongoose connection
+mongoose.set('strictQuery', false);
+
+main().catch(err => console.log(err));
+async function main() {
+  await mongoose.connect("mongodb+srv://johndoe:fJIDeFJhaXsaqbNn@dit127.xiqpnxc.mongodb.net/");
+}
 
 /*app.get("/*.html",
     async (req : Request, res : Response, next) => {

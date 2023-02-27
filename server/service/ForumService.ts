@@ -1,6 +1,9 @@
 import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
+import { Account } from "../model/Account";
 import { forumModel } from "../db/forum.db"
+
+/* Populate() */
 
 export interface IForumService{
     /* Get all available subforums in an array */
@@ -9,8 +12,8 @@ export interface IForumService{
     /* Checks if a forum exists. Returns the forum if true, undefined otherwise. */
     findForum(input : string) : Promise<Forum | undefined>
 
-    /* Creates a subforum and returns it */
-    createForum(t : string, d : string, a : string) : Promise<Forum>;
+    /* Creates a subforum and returns it, returns undefined if error occurs */
+    createForum(t : string, d : string, a : Account) : Promise<Forum | undefined>;
 
     /* Submits a post to a subforum. 
     Returns updated forum object if successful, boolean false otherwise */
@@ -18,59 +21,40 @@ export interface IForumService{
 }
 
 class ForumDBService implements IForumService{
+
+    /* Retrieves all existing forums. */
     async getForums(): Promise<Forum[]> {
         return await forumModel.find();
     }
 
+    /* Search for a specific forum. Returns the forum if found, undefined otherwise. */
     async findForum(input: string): Promise<Forum | undefined> {
-        return await forumModel.find();
+        const result = await forumModel.findOne({title : input});
+        if(result===null){return undefined}
+        return result;
     }
 
-    async createForum(t: string, d: string, a: string): Promise<Forum> {
-        return await forumModel.create({
-            title : t,
-            description : d,
-            author : a,
-            posts : []
-        })
+    /* Creates a forum and returns the new forum if successful, undefined otherwise. */
+    async createForum(title: string, description: string, author: Account): Promise<Forum | undefined> {
+        const newForum = new Forum(title,description,author);
+        return await forumModel.create(newForum)
     }
 
-    async submitPost(f: string, p: Post): Promise<false | Forum> {
-        return await forumModel.
-    }
-}
-
-class ForumService implements IForumService{
-    forums : Array<Forum> = [];
-
-    async getForums(): Promise<Forum[]> {
-        return this.forums;
-    }
-
-    async findForum(input : string) : Promise<Forum | undefined>{
-        return this.forums.find((f) => f.title===input);
-    }
-
-    async createForum(t : string, d : string, o : string): Promise<Forum> {
-        const forum = new Forum(t,d,o);
-        this.forums.push(forum);
-        return forum;
-    }
-    
-    /* string 'f' is the forum in question for the post to be submitted to. */
+    /* Submits a post to a specific subforum, returns updated forum if successful - bool false otherwise.*/
     async submitPost(forum: string, p: Post): Promise<false | Forum> {
-        const forumExists = this.forums.find((f)=>f.title==forum);
-        if(forumExists==null){
-            return false;
-        }
-        const postSuccess = forumExists.addPost(p);
-        if(!postSuccess){
-            return false;
-        }
-        return forumExists;
+        const query = {title : forum};
+        /* Finds the forum and pushes new post to list of posts */
+        const result = await forumModel.updateOne(query,{ $push: {posts : p}});
+        if(result.acknowledged){ // Successfully added, now fetch updated forum object
+            const getUpdatedForum = await forumModel.findOne(query);
+            if(getUpdatedForum===null){ // Between push and fetch something has happened, return false
+                return false
+            }
+            return getUpdatedForum;
+        } // Push failed, return false
+        return false;
     }
 }
-
 export function makeForumService() : IForumService{
-    return new ForumService();
+    return new ForumDBService();
 }

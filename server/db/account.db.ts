@@ -7,7 +7,7 @@ import { conn } from "./conn";
 
 const accountSchema : Schema = new Schema({
 
- id : {
+ username : {
 
  type : String,
 
@@ -23,8 +23,7 @@ const accountSchema : Schema = new Schema({
 
  required : true
 
- },
-
+ }
 
 });
 

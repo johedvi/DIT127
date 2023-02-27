@@ -47,7 +47,7 @@ userRouter.post("/", async(
                         return;
                 }
                 const userExists = await accountService.userExists(req.body.username);
-                if(userExists===false){
+                if(userExists===null){
                         res.status(404).send(`Bad POST to login - user ${req.body.username} does not exist.`);
                         return;
                 }

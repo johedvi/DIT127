@@ -1,5 +1,6 @@
 import {Schema, Model} from "mongoose";
 
+import { Account } from "../model/Account";
 import {Forum} from "../model/Forum";
 import {Post} from "../model/Post";
 
@@ -12,7 +13,9 @@ const forumSchema : Schema = new Schema({
 
  type : String,
 
- required : true
+ required : true,
+
+ unique : true
 
  },
 
@@ -24,28 +27,23 @@ const forumSchema : Schema = new Schema({
 
  },
 
- author : {
+ 
+author : {
+  type : Schema.Types.ObjectId, 
+  ref: 'Account',
+  required : true
+},
 
-    type : Number,
-   
-    required : false,
+users : [{
+  type : Schema.Types.ObjectId,
+  ref: 'Account',
+  required : true
+}],
 
-    unique : true
-   
-    },
-
- post : {
-
-        type :[Post] ,
-       
-        required : false,
-    
-        },
-
-});
-
-
-
-
+ posts : [{
+  type : Schema.Types.ObjectId,
+  ref: 'Post',
+  required : true
+ }]});
 
 export const forumModel = conn.model<Forum>("Forum", forumSchema);

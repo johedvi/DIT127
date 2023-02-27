@@ -1,16 +1,18 @@
 import { Post } from "./Post"; 
+import { Account } from "./Account";
 
 export class Forum {
-    title       : string;
-    description : string;
-    author      : string;
-    /* An array of members for this subforum should be here*/
-    posts       : Array<Post>;
+    title       : string; // The unqiue ID of the forum - It's title
+    description : string; // A short description about this subforum
+    author      : Account; // The creator of the forum
+    users       : Account[]; // A list of users subscribed to the forum
+    posts       : Array<Post>; // A list of posts created & available on the forum
 
-    constructor(title : string, description : string, author : string){
+    constructor(title : string, description : string, author : Account){
         this.title       = title;
         this.description = description;
-        this.author       = author;
+        this.author      = author;
+        this.users       = [author];
         this.posts       = [];
     }
     /* Retrieve the lists of posts in this subforum */
@@ -24,5 +26,22 @@ export class Forum {
         const newLength = this.posts.push(post);
         if(oldLength>=newLength) return false;
         return true;
+    }
+
+    /* When a user joins a subforum they are added to the users list */
+    joinForum(user : Account){
+        this.users.push(user);
+        return true;
+    }
+
+    /* When a user leaves the subforum they are removed from the users list
+        Returns true if successful, false otherwise */
+    leaveForum(user : Account){
+        const index = this.users.findIndex(u => u===user);
+        if(index!==-1){
+            const f = this.users.splice(index,1);
+            return f[0]===user;
+        }
+        return false;
     }
 }

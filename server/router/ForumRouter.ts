@@ -1,10 +1,8 @@
 import express from "express";
 import { Response, Request } from "express";
 import { Forum } from "../model/Forum";
-import { Post } from "../model/Post";
-import { Comment } from "../model/Comment";
+import { Account } from "../model/Account";
 import { makeForumService } from "../service/forumService";
-import { makeAccountService } from "../service/accountService";
 const forumService = makeForumService();
 
 /* Allows this file to be exported/used in index.ts */
@@ -27,7 +25,7 @@ forumRouter.get('/', async(
 
 /* Request to create new forum */
 forumRouter.put('/', async(
-    req: Request<{},{},{title : string, description : string, author : string}>,
+    req: Request<{},{},{title : string, description : string, author : Account}>,
     res: Response<Forum | string>
 ) => {
     try {
@@ -68,103 +66,6 @@ forumRouter.get("/:id",async(
     }
 });
 
-/*  ***     ***
-FORUM SPECIFIC POST HANDLING
-    ***     *** */  
-
-/* Retrieve all posts inside subforum */
-forumRouter.get('/:id/post',async(
-    req : Request<{id : string},{},{}>,
-    res : Response<Post[] | string>
-) => {
-    try{
-        /* Find if the given forum exists, if so retrieve its posts */
-        const exist = await forumService.findForum(req.params.id);
-        if(exist==null){
-            res.status(404).send(`Forum ${req.params.id} not found.`);
-            return;
-        }
-        res.status(200).send(exist.posts);
-    }catch(e:any){res.status(500).send(e.message);}
-});
-
-/* Creates a post in a specific subforum */
-forumRouter.put('/:id/post',async(
-    req : Request<{id : string},{},{title : string, content : string, author : string}>,
-    res : Response<Forum | String>
-) =>{
-    try{
-        /* Check if forum exists */ 
-        const forumExists = await forumService.findForum(req.params.id);
-        if(forumExists==null){
-            res.status(404).send(`Forum ${req.params.id} not found.`);
-            return;
-        }
-        /* Check if user exists */
-
-        /* Create post and add to forum */
-        const newPost = new Post(req.body.title,req.body.content,req.body.author);
-        const postSuccess = await forumService.submitPost(req.params.id,newPost);
-        if(postSuccess===false){
-            res.status(500).send(`Unable to submit post to ${req.params.id}`);
-            return;
-        }
-        res.status(201).send(postSuccess);
-    }catch(e:any){res.status(500).send(e.message);}
-});
-
-/* Retrieve a post in a specific subforum */
-forumRouter.get("/:id/post/:pid",async(
-    req : Request<{id : string, pid : string},{},{}>,
-    res : Response<Post |String>
-)=>{
-    try{
-        const forumExists = await forumService.findForum(req.params.id);
-        if(forumExists==null){
-            res.status(404).send(`Forum ${req.params.id} not found.`)
-            return;
-        }
-        const post = forumExists.posts.find((p)=>p.title==req.params.pid);
-        if(post==null){
-            res.status(404).send(`Post ${req.params.pid} not found.`);
-            return;
-        }
-        res.status(200).send(post);
-    }catch(e : any){
-        res.status(500).send(`Unable to retrieve post ${req.params.pid} from forum ${req.params.id} with error ${e.message}`);
-    }
-});
-
-/* ** **
-    COMMENTING ON A POST RELATED
-    **  ** */
-/* Comment on a specific post */
-forumRouter.put("/:id/post/:pid/comment", async(
-    req : Request<{id : string, pid : string},{},{author : string, content : string}>,
-    res : Response<Comment|String>
-)=>{
-    try{
-        const forumExists = await forumService.findForum(req.params.id);
-        if(forumExists==null){
-            res.status(404).send(`Forum ${req.params.id} not found.`)
-            return;
-        }
-        const post = forumExists.posts.find((p)=>p.title==req.params.pid);
-        if(post==null){
-            res.status(404).send(`Post ${req.params.pid} not found.`);
-            return;
-        }
-        const comment = new Comment(req.body.author,req.body.content);
-        const commented = post.addComment(comment);
-        if(commented==false){
-            res.status(500).send(`Unable to post comment`);
-            return;
-        }
-        res.status(201).send(comment);
-    } catch(e:any){
-        res.status(500).send(`Server error ${e.message}`);
-    }
-})
 /*
 COMMON RESPONSES
 if(req.params.id==null){

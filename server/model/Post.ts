@@ -1,12 +1,15 @@
 import { Comment } from "./Comment";
+import { Account } from "./Account";
 
 export class Post{
-    title    : string;
-    content  : string;
-    author   : string;
-    comments : Array<Comment>;
+    id       : number; // A unique ID made from the timestamp
+    title    : string; // Title of the post
+    content  : string; // The body of the post - what the author has published
+    author   : Account; // Author
+    comments : Array<Comment>; // A list of comments made by users to this specific post
 
-    constructor(title : string, content : string,author : string){
+    constructor(title : string, content : string,author : Account){
+        this.id       = new Date().valueOf();
         this.title    = title;
         this.content  = content;
         this.author   = author;
@@ -20,12 +23,12 @@ export class Post{
         return newLength>preLength;
     }
 
+    /* Deletes the CONTENT of a specific comment. The object still exists in the list of comments. */
     deleteComment(index : number){
         if(index>this.comments.length){
             return false;
         }
-        this.comments[index].content="This comment has been deleted.";
-        this.comments[index].author="Removed.";
+        this.comments[index].deleteComment();
         return true;
     }
 }
