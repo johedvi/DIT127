@@ -9,10 +9,10 @@ export const app = express();
 /* Allows the use of JSON in response/request */
 app.use(session({
     secret : "tempsecretkey", // Replace with .env file
-    resave : false,
+    resave : true,
     cookie : {maxAge : 1000*60*60*24}, // 24 hour sign-in time
     saveUninitialized : true
-}))
+}));
 app.use(cors({
     origin : true,
     credentials : true

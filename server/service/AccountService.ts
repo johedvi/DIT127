@@ -8,7 +8,7 @@ export interface IAccountService {
     usernameTaken(u : string) : Promise<boolean>;
 
     /* Check if a user exists */
-    userLogin(a : Account) : Promise<null | Account>;
+    userLogin(u : string, p : string) : Promise<null | Account>;
 
     // Change a users account password. True if successful.
     // False if new password don't meet requirements.
@@ -17,9 +17,12 @@ export interface IAccountService {
 
 class AccountDBService implements IAccountService {
     async createAccount(u: string, p: string): Promise<false | Account> {
-        const newAccount = new Account(u,p);
-        const response = await accountModel.create(newAccount)
-        return response;
+        const newAccount = new Account(u);
+        const response = await accountModel.create({username : u, password : p})
+        if(response===null){ // Account already exists
+            return false;
+        }
+        return newAccount;
     }
 
     async usernameTaken(u: string): Promise<boolean> {
@@ -29,8 +32,8 @@ class AccountDBService implements IAccountService {
     }
 
     /* Checks if an account exists. Returns the account if true, null otherwise. */
-    async userLogin(a : Account): Promise<null | Account> {
-        return accountModel.findOne({username : a.username , password : a.password});
+    async userLogin(u : String, p : String): Promise<null | Account> {
+        return accountModel.findOne({username : u, password : p});
     }
 
     async changePassword(a: string, op: string, np: string): Promise<boolean> {

@@ -24,7 +24,8 @@ class ForumDBService implements IForumService{
 
     /* Retrieves all existing forums. */
     async getForums(): Promise<Forum[]> {
-        return await forumModel.find();
+        const response = await forumModel.find().populate('author','username');
+        return response;
     }
 
     /* Search for a specific forum. Returns the forum if found, undefined otherwise. */
@@ -36,7 +37,10 @@ class ForumDBService implements IForumService{
 
     /* Creates a forum and returns the new forum if successful, undefined otherwise. */
     async createForum(title: string, description: string, author: string): Promise<Forum | undefined> {
-        const lookup = await forumModel.db.model('Account').findOne({username : author});
+        const lookup = await accountModel.findOne({username : author}); // Get user object
+        if(lookup===null){
+            return undefined;
+        }
         const newForum = {title : title, description : description, author : lookup._id, users : [lookup._id], posts : []};
         const response = await forumModel.create(newForum);
         return response;
