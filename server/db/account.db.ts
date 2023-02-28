@@ -6,7 +6,6 @@ import { conn } from "./conn";
 
 
 const accountSchema : Schema = new Schema({
-
  username : {
 
  type : String,
@@ -31,4 +30,4 @@ const accountSchema : Schema = new Schema({
 
 
 
-export const accountModel = conn.model<Account>("Account", accountSchema);
+export const accountModel = conn.model<Account>('Account', accountSchema);

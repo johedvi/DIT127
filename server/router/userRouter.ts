@@ -46,12 +46,13 @@ userRouter.post("/", async(
                         res.status(400).send(`Bad POST to login - password is not of type 'string'.`);
                         return;
                 }
-                const userExists = await accountService.userExists(req.body.username);
+                const userExists = await accountService.userLogin(req.body);
                 if(userExists===null){
                         res.status(404).send(`Bad POST to login - user ${req.body.username} does not exist.`);
                         return;
                 }
                 req.session.user = userExists; // Assign session ID / cookie to logged-in user.
+                console.log(req.session);
                 res.status(200).send(userExists);
         }catch(e:any){
                 res.status(500).send(e.message);

@@ -1,7 +1,7 @@
 import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
-import { Account } from "../model/Account";
 import { forumModel } from "../db/forum.db"
+import { accountModel } from "../db/account.db";
 
 /* Populate() */
 
@@ -13,7 +13,7 @@ export interface IForumService{
     findForum(input : string) : Promise<Forum | undefined>
 
     /* Creates a subforum and returns it, returns undefined if error occurs */
-    createForum(t : string, d : string, a : Account) : Promise<Forum | undefined>;
+    createForum(t : string, d : string, a : string) : Promise<Forum | undefined>;
 
     /* Submits a post to a subforum. 
     Returns updated forum object if successful, boolean false otherwise */
@@ -35,9 +35,11 @@ class ForumDBService implements IForumService{
     }
 
     /* Creates a forum and returns the new forum if successful, undefined otherwise. */
-    async createForum(title: string, description: string, author: Account): Promise<Forum | undefined> {
-        const newForum = new Forum(title,description,author);
-        return await forumModel.create(newForum)
+    async createForum(title: string, description: string, author: string): Promise<Forum | undefined> {
+        const lookup = await forumModel.db.model('Account').findOne({username : author});
+        const newForum = {title : title, description : description, author : lookup._id, users : [lookup._id], posts : []};
+        const response = await forumModel.create(newForum);
+        return response;
     }
 
     /* Submits a post to a specific subforum, returns updated forum if successful - bool false otherwise.*/

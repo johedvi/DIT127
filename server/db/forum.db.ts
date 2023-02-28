@@ -1,9 +1,5 @@
-import {Schema, Model} from "mongoose";
-
-import { Account } from "../model/Account";
+import mongoose, {Schema, Model} from "mongoose";
 import {Forum} from "../model/Forum";
-import {Post} from "../model/Post";
-
 import { conn } from "./conn";
 
 
@@ -29,21 +25,21 @@ const forumSchema : Schema = new Schema({
 
  
 author : {
-  type : Schema.Types.ObjectId, 
+  type : Schema.Types.ObjectId,
   ref: 'Account',
   required : true
 },
 
 users : [{
   type : Schema.Types.ObjectId,
-  ref: 'Account',
+  ref : 'Account',
   required : true
 }],
 
  posts : [{
   type : Schema.Types.ObjectId,
-  ref: 'Post',
-  required : true
- }]});
-
-export const forumModel = conn.model<Forum>("Forum", forumSchema);
+  ref : 'Post'
+ }]
+}
+);
+export const forumModel = conn.model<Forum>('Forum', forumSchema);

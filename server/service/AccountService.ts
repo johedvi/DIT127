@@ -8,7 +8,7 @@ export interface IAccountService {
     usernameTaken(u : string) : Promise<boolean>;
 
     /* Check if a user exists */
-    userExists(a : string) : Promise<null | Account>;
+    userLogin(a : Account) : Promise<null | Account>;
 
     // Change a users account password. True if successful.
     // False if new password don't meet requirements.
@@ -17,7 +17,8 @@ export interface IAccountService {
 
 class AccountDBService implements IAccountService {
     async createAccount(u: string, p: string): Promise<false | Account> {
-        const response = await accountModel.create({username : u, password : p})
+        const newAccount = new Account(u,p);
+        const response = await accountModel.create(newAccount)
         return response;
     }
 
@@ -28,8 +29,8 @@ class AccountDBService implements IAccountService {
     }
 
     /* Checks if an account exists. Returns the account if true, null otherwise. */
-    async userExists(a: string): Promise<null | Account> {
-        return accountModel.findOne({username : a});
+    async userLogin(a : Account): Promise<null | Account> {
+        return accountModel.findOne({username : a.username , password : a.password});
     }
 
     async changePassword(a: string, op: string, np: string): Promise<boolean> {

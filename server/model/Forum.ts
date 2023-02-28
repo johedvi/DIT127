@@ -6,7 +6,7 @@ export class Forum {
     description : string; // A short description about this subforum
     author      : Account; // The creator of the forum
     users       : Account[]; // A list of users subscribed to the forum
-    posts       : Array<Post>; // A list of posts created & available on the forum
+    posts       : Post[]; // A list of posts created & available on the forum
 
     constructor(title : string, description : string, author : Account){
         this.title       = title;

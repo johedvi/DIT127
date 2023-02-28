@@ -35,14 +35,14 @@ const postSchema: Schema = new Schema({
 
     author: {
 
-        type: Schema.Types.ObjectId,
+        type: String,
         ref : 'Account',
         required: true
 
     },
 
     comments: [{
-        type : Schema.Types.ObjectId,
+        type : Number,
         ref : 'Comment',
         required : false
     }]

@@ -8,13 +8,12 @@ enum voteType {
 
 /* A tuple type consisting of a unique users ID and corresponding upvote / downvote */
 type Tuple = {
-    id : number,
+    username : string,
     vote : voteType
 }
 
 
 export class Comment {
-    // id   : string? some unique ID for a post that this comment is associated with
     author  : Account|string; // User who published the comment
     content : string; // The message
     rating  : number; // The rating (upvotes & downvotes) from other users
@@ -29,14 +28,32 @@ export class Comment {
 
     /* Upvotes the comment. If the ratee has already upvoted then undo the upvote.
         If the ratee previously downvoted then change it to an upvote (=+2 difference) */
-    upvote(ratee : number){
-
-        this.rating++;
-        return true;
+    upvote(ratee : string){
+        const getRateeIndex = this.ratees.findIndex((tuple)=>tuple.username==ratee);
+        if(getRateeIndex === -1){ // User has not yet voted, add them to the list and increase rating
+            const newRatee : Tuple = {username : ratee, vote : voteType.UP};
+            this.ratees.push(newRatee);
+            this.rating += 1;
+            return true;
+        }
+        const getRatee = this.ratees[getRateeIndex];
+        // Has already voted, check if upvote or downvote
+        if(getRatee.vote===voteType.UP){ // Already upvoted, remove vote
+            this.ratees.splice(getRateeIndex); // Removes the ratee
+            this.rating -= 1;
+            return true;
+        }
+        if(getRatee.vote===voteType.DOWN){ // Change downvote to upvote
+            const updateRatee = {username : getRatee.username, vote : voteType.UP};
+            this.ratees[getRateeIndex] = updateRatee;
+            this.rating += 2;
+            return true;
+        }
+        return false; // Fail safe
     }
     /* Downvotes the comment. If the ratee has already downvoted then undo the downvote. 
         If the ratee previously upvoted then change it to a downvote (=-2 difference) */
-    downvote(ratee : number){
+    downvote(ratee : string){
         this.rating--;
         return true;
     }

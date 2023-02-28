@@ -32,6 +32,8 @@ forumRouter.put('/', async(
         const title = req.body.title;
         const description = req.body.description;
         const author = req.body.author;
+        const cookie = req.sessionID
+        console.log(cookie);
         /* Check for bad input */
         if(typeof(title)!=="string"||
         typeof(description)!=="string"||
@@ -65,6 +67,29 @@ forumRouter.get("/:id",async(
         res.status(500).send(e.message);
     }
 });
+
+/* Delete forum if and only if authorized */
+forumRouter.delete('/:id',async(
+    req : Request<{ id : string}, {}, {}>,
+    res : Response<string>
+)=>{
+    try{
+        if(req.params.id===null){
+            res.status(400).send(`Bad DELETE call to ${req.originalUrl} --- missing id param`);
+            return;
+        }
+        const getForum = await forumService.findForum(req.params.id);
+        if(getForum === undefined){
+            res.status(404).send(`Bad DELETE call to ${req.originalUrl} --- forum ${req.params.id} does not exist`);
+            return;
+        }
+        if(req.session){
+            
+        }
+    }catch(e:any){
+        res.status(500).send(`Internal server error - Unable to delete forum ${req.params.id}`);
+    }
+})
 
 /*
 COMMON RESPONSES
