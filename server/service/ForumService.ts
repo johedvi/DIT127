@@ -1,4 +1,4 @@
-import { Forum } from "../model/Forum";
+import { Forum, IForum } from "../model/Forum";
 import { Post } from "../model/Post";
 import { forumModel } from "../db/forum.db"
 import { accountModel } from "../db/account.db";
@@ -7,7 +7,7 @@ import { accountModel } from "../db/account.db";
 
 export interface IForumService{
     /* Get all available subforums in an array */
-    getForums() : Promise<Array<Forum>>;
+    getForums() : Promise<Array<IForum>>;
 
     /* Checks if a forum exists. Returns the forum if true, undefined otherwise. */
     findForum(input : string) : Promise<Forum | undefined>
@@ -23,8 +23,8 @@ export interface IForumService{
 class ForumDBService implements IForumService{
 
     /* Retrieves all existing forums. */
-    async getForums(): Promise<Forum[]> {
-        const response = await forumModel.find().populate('author','username');
+    async getForums(): Promise<IForum[]> {
+        const response = await forumModel.find().populate('author');
         return response;
     }
 

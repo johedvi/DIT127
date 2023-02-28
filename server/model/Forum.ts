@@ -1,7 +1,13 @@
 import { Post } from "./Post"; 
 import { Account } from "./Account";
 
-export class Forum {
+export interface IForum {
+    title       : string; // The unqiue ID of the forum - It's title
+    description : string; // A short description about this subforum
+    author : string | Account;
+}
+
+export class Forum implements IForum {
     title       : string; // The unqiue ID of the forum - It's title
     description : string; // A short description about this subforum
     author      : Account; // The creator of the forum
