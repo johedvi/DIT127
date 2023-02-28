@@ -3,8 +3,18 @@ import { Response, Request } from "express";
 import { Forum } from "../model/Forum";
 import { Account } from "../model/Account";
 import { makeForumService } from "../service/forumService";
+import mongoose, { Schema } from "mongoose";
 const forumService = makeForumService();
 
+type UserRequest = Request & {
+    body : {
+        title : String,
+        description : String
+    },
+    session : {
+        user? : Account
+    }
+}
 /* Allows this file to be exported/used in index.ts */
 export const forumRouter = express.Router();
 
@@ -25,15 +35,17 @@ forumRouter.get('/', async(
 
 /* Request to create new forum */
 forumRouter.put('/', async(
-    req: Request<{},{},{title : string, description : string, author : Account}>,
+    req: UserRequest,
     res: Response<Forum | string>
 ) => {
     try {
+        if(req.session.user===undefined){ // must be logged in
+            res.status(403).send(`Bad PUT request to Forum --- User must be logged in`);
+            return;
+        }
         const title = req.body.title;
         const description = req.body.description;
-        const author = req.body.author;
-        const cookie = req.sessionID
-        console.log(cookie);
+        const author = req.session.user.username;
         /* Check for bad input */
         if(typeof(title)!=="string"||
         typeof(description)!=="string"||
@@ -70,10 +82,18 @@ forumRouter.get("/:id",async(
 
 /* Delete forum if and only if authorized */
 forumRouter.delete('/:id',async(
-    req : Request<{ id : string}, {}, {}>,
+    req : Request<{ id : string}, {}, {}> & {
+        session : {
+            user? : Account
+        }
+    },
     res : Response<string>
 )=>{
     try{
+        if(req.session.user===undefined){
+            res.status(403).send(`Bad DELETE call to ${req.originalUrl} --- Unauthorised`);
+            return;
+        }
         if(req.params.id===null){
             res.status(400).send(`Bad DELETE call to ${req.originalUrl} --- missing id param`);
             return;
@@ -83,9 +103,8 @@ forumRouter.delete('/:id',async(
             res.status(404).send(`Bad DELETE call to ${req.originalUrl} --- forum ${req.params.id} does not exist`);
             return;
         }
-        if(req.session){
-            
-        }
+        console.log(getForum.author);
+        console.log(req.session.user);
     }catch(e:any){
         res.status(500).send(`Internal server error - Unable to delete forum ${req.params.id}`);
     }
