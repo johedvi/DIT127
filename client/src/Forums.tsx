@@ -6,7 +6,7 @@ import ReactRouter from 'react-router-dom';
 interface Forum {
   title: string;
   description: string;
-  owner: string;
+  author: string;
   posts: Array<Post>;
 }
 
@@ -67,7 +67,7 @@ function App() {
             key={forum.title}
             title={forum.title}
             description={forum.description}
-            owner={forum.owner}
+            author={forum.author}
             posts={forum.posts} />)}
         </div>
       </div>
@@ -77,14 +77,14 @@ function App() {
 
 function DisplayForum(forum: Forum) {
   return (
-    <a className="forumLink" href={"/forum/"+forum.title}>
       <div className="forumBlock">
+        <a className="forumLink" href={"/forum/"+forum.title}>
         <div className="forumTitle">
           <h2>{forum.title}</h2>
-        </div>
-        <a href={"profile/"+forum.owner}>
+        </div></a>
+        <a href={"profile/"+forum.author}>
           <div className="forumAuthor">
-            <h5>{forum.owner ? forum.owner : "Author"}</h5>
+            <h5>{forum.author ? forum.author : "Author"}</h5>
           </div>
         </a>
         <div className="forumDescription">
@@ -102,7 +102,7 @@ function DisplayForum(forum: Forum) {
           </a>
         </div>
       </div>
-  </a>
+
   )
 }
 export default App;
