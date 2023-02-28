@@ -1,0 +1,67 @@
+h1 {
+  text-align: center;
+}
+
+#createForum {
+  width: fit-content;
+  margin: 48px auto;
+}
+
+#formImg {
+  max-width: 48px;
+}
+
+.inputBlock {
+  display: inline-block;
+  margin: 0 8px;
+}
+
+label {
+  margin: 0 8px;
+  font-weight: bold;
+}
+
+input {
+  background-color: #434343;
+  border-radius: 12px;
+  color: white; 
+  padding: 4px 8px;
+}
+
+.forums {
+  background-color: #e9e9e9;
+  border-radius: 4px;
+  padding: 8px;
+}
+.forumBlock {
+  max-width: 720px;
+  margin: 8px 0;
+  background-color: #979797;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.forums a {
+  text-decoration: none;
+  color: rgb(244, 244, 244);
+}
+
+.forumTitle, .forumDescription {
+  display: inline-block;
+  width: 80%;
+}
+
+.forumAuthor, .icons {
+  float: right;
+  max-width: 20%;
+}
+
+.forumBlock h2, .forumBlock h5 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icons {
+  max-width: 32px;
+}

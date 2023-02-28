@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import ReactRouter, { useParams } from 'react-router-dom';
+import ReactRouter, { redirect, useParams } from 'react-router-dom';
 
 interface Forum{
   title : string;
@@ -16,14 +16,12 @@ interface Post{
 let forumString : string;
 function App() {
   const { forumId } = useParams();
-  forumString = forumId?.toString()!;
   const [page,setForums] = useState<Forum>();
 
   const [postTitle, setTitle] = useState<String>();
   const [postBody, setBody] = useState<String>();
 
-  async function updateForums(){
-    
+  async function updateForums(){  
     const response = await axios.get<Forum>("http://localhost:8080/forum/"+forumId?.toString());
     setForums(response.data);
   }
@@ -32,10 +30,14 @@ function App() {
     updateForums();
   },[])
 
+  /* if (page == undefined) {
+    redirect("/forum");
+  }*/
+  
   return (
     <>
       <div>
-        <h1>{page?.title}</h1>
+      <h2>{"Welcome to - " + page?.title}</h2>
         <form onSubmit={async e => {
           e.preventDefault();
           await axios.put("http://localhost:8080/forum/"+forumId+"/post", { title: postTitle, content: postBody, author: "John Doe" }); updateForums();
@@ -62,9 +64,11 @@ function App() {
       </div>
     </>
   );
+
+  function DisplayPosts(post : Post) {
+    return <li><a href={"/forum/"+page?.title+"/post/"+post.title}>{post.title}</a></li>
+  }
 }
 
-function DisplayPosts(post : Post) {
-  return <li><a href={"/forum/"+forumString+"/post/"+post.title}>{post.title}</a></li>
-}
+
 export default App;
