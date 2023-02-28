@@ -29,6 +29,7 @@ export default function (props: {}) {
 
   function signin() {
     return (
+      require("./account.css"),
       <div className="Auth-form-container">
         <form className="Auth-form" onSubmit={async e => {
           e.preventDefault();
