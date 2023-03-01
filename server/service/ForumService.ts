@@ -21,11 +21,13 @@ export interface IForumService{
 }
 
 class ForumDBService implements IForumService{
-
     /* Retrieves all existing forums. */
     async getForums(): Promise<IForum[]> {
         const response = await forumModel.find().populate('author');
-        return response;
+        const newForums = response.map(function(i){
+            return {title : i.title, description : i.description, author : i.author.username}
+        });
+        return newForums;
     }
 
     /* Search for a specific forum. Returns the forum if found, undefined otherwise. */

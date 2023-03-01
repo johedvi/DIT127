@@ -1,9 +1,8 @@
 import express from "express";
 import { Response, Request } from "express";
-import { Forum } from "../model/Forum";
+import { Forum, IForum } from "../model/Forum";
 import { Account } from "../model/Account";
 import { makeForumService } from "../service/forumService";
-import mongoose, { Schema } from "mongoose";
 const forumService = makeForumService();
 
 type UserRequest = Request & {
@@ -23,7 +22,7 @@ forumRouter.use(express.json());
 /* Request to retrieve all subforums */
 forumRouter.get('/', async(
     req: Request,
-    res: Response<Array<Forum> | string>
+    res: Response<Array<IForum> | string>
 ) => {
     try { /* Send back all forums if possible */
         const forums = await forumService.getForums();
