@@ -67,8 +67,7 @@ forumRouter.get("/:id",async(
             res.status(400).send(`Bad GET call to ${req.originalUrl} --- missing id param`);
             return;
         }
-        const forums = await forumService.getForums(); //Get all forums
-        const forum = forums.find(element=>element.title==req.params.id) //Find the specific one
+        const forum = await forumService.findForum(req.params.id);
         if(forum==undefined){ // Forum doesn't exist
             res.status(404).send(`Forum ${req.params.id} not found.`);
             return;
