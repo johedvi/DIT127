@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ReactRouter from 'react-router-dom';
-//import './forum.css';
+
 
 interface Forum {
   title: string;
@@ -18,13 +18,12 @@ interface Post {
 
 function App() {
   const [forums, setForums] = useState<Forum[]>([]);
-  const [forumName, setName] = useState<String>();
-  const [forumDesc, setDesc] = useState<String>();
-  const [forumAuth, setAuth] = useState<String>();
+  const [searchName, setSearch] = useState<String>();
 
   async function updateForums() {
-    const response = await axios.get<Forum[]>("http://localhost:8080/forum");
-    setForums(response.data);
+    const response = await axios.get<Forum[]>("http://localhost:8080/forum/", { data: { itemId: searchName } });
+    console.log(response)
+     setForums(response.data);
   }
   useEffect(() => {
     updateForums();
@@ -35,16 +34,19 @@ function App() {
     <>
       <div>
         <h1> Forums </h1>
-        <form id="createForum" onSubmit={async e => {
+        <form id="search" onSubmit={async e => {
           e.preventDefault();
-          await axios.put("http://localhost:8080/forum", { title: forumName, description: forumDesc, author: forumAuth }); updateForums();
+          updateForums();
+
         }}>
+
           <div className="inputBlock">
           <label>Search</label>
-          <input type="text" id="forumname" placeholder="Name" onChange={(e) => {
-            setName(e.target.value);
+          <input type="text" id="search" placeholder="Name" onChange={(e) => {
+            setSearch(e.target.value);
           }} />
           </div>
+          <input type="submit" value="Post!"/>
           
   
         </form> 
