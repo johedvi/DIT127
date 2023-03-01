@@ -46,7 +46,7 @@ function App() {
             setSearch(e.target.value);
           }} />
           </div>
-          <input type="submit" value="Post!"/>
+          <input type="submit" value="Search!"/>
           
   
         </form> 
