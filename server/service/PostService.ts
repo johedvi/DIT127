@@ -13,11 +13,11 @@ export interface IPostService {
 
     // Upvotes the comment on index n inside the post and returns true.
     // Returns false if no comment with index n.
-    upvoteComment(n : number) : Promise<Boolean>;
+    //upvoteComment(n : number) : Promise<Boolean>;
 
     // Downvotes the comment on index n inside the post and returns true.
     // Returns false if no comment with index n.
-    downvoteComment(n : number) : Promise<Boolean>;
+    //downvoteComment(n : number) : Promise<Boolean>;
 }
 
 class PostDBService implements IPostService{
@@ -29,20 +29,20 @@ class PostDBService implements IPostService{
 
     /* Adds a comment to a post, returns true if added false otherwise */
     async submitComment(post : Post, comment: Comment): Promise<Boolean> {
-        const query = {id : post.id}; // forum : post.forum
+        const query = {id : post.id};
         const result =  await postModel.updateOne(query,{$push: {comments : comment}});
         return result.acknowledged;
     }
 
     /* Upvotes a comment, returns true if successful false otherwise*/
-    async upvoteComment(n: number): Promise<Boolean> {
+    /*async upvoteComment(n: number): Promise<Boolean> {
         
     }
 
-    /* Downvotes a comment, returns true if successful false otherwise */
+    Downvotes a comment, returns true if successful false otherwise
     async downvoteComment(n: number): Promise<Boolean> {
         
-    }
+    }*/
 }
 
 export function makePostService() : IPostService{

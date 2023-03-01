@@ -1,26 +1,16 @@
 import { Schema, Model } from "mongoose";
-import { Account } from "../model/Account";
-import { Comment } from "../model/Comment";
 import { conn } from "./conn";
 import { Post } from "../model/Post";
 
-
 const postSchema: Schema = new Schema({
 
-    id: {
-
-        type: Number,
-
-        required: true,
-
-        unique: true
-
-    },
+    id : Number,
 
     title: {
 
         type: String,
-
+        min : 1,
+        max : 128,
         required: true
 
     },
@@ -28,23 +18,23 @@ const postSchema: Schema = new Schema({
     content: {
 
         type: String,
-
+        min : 1,
+        max : 15000,
         required: true
 
     },
 
     author: {
 
-        type: String,
+        type: Schema.Types.ObjectId,
         ref : 'Account',
         required: true
 
     },
 
     comments: [{
-        type : Number,
-        ref : 'Comment',
-        required : false
+        type : Schema.Types.ObjectId,
+        ref : 'Comment'
     }]
 
 });
