@@ -1,6 +1,17 @@
 import './main.css';
 
+import React, {useState} from 'react'
+
+
+
+
+
+
 function Navbar() {
+
+const [searchInput, setSearchInput] = useState<String>();
+
+
   return (
       <><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" /><nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -32,10 +43,19 @@ function Navbar() {
               </ul>
             </li>
           </ul>
+
           <form className="d-flex" role="search">
+         
             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-            <button className="btn btn-outline-primary" type="submit">Search</button>
+         
           </form>
+
+          <form action="/search">
+              <input className="btn btn-outline-primary" type="submit" value="Search"/>
+              </form>
+       
+    
+          
 
           <button className="btn btn-outline-secondary" type="submit">COGWHEEL</button>
           {
