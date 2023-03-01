@@ -2,14 +2,14 @@ import { Comment } from "./Comment";
 import { Account } from "./Account";
 
 export class Post{
-    id       : number; // A unique ID made from the timestamp
+    id       : Number;
     title    : string; // Title of the post
     content  : string; // The body of the post - what the author has published
     author   : Account; // Author
     comments : Array<Comment>; // A list of comments made by users to this specific post
 
-    constructor(title : string, content : string,author : Account){
-        this.id       = new Date().valueOf();
+    constructor(title : string, content : string,author : Account, id : number){
+        this.id       = id;
         this.title    = title;
         this.content  = content;
         this.author   = author;

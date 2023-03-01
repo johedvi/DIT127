@@ -40,7 +40,7 @@ function App() {
       <h2>{"Welcome to - " + page?.title}</h2>
         <form onSubmit={async e => {
           e.preventDefault();
-          await axios.put("http://localhost:8080/forum/"+forumId+"/post", { title: postTitle, content: postBody, author: "John Doe" }); updateForums();
+          await axios.put("http://localhost:8080/forum/"+forumId+"/post", {fid : forumId, title: postTitle, content: postBody}); updateForums();
         }}>
           <label>Post Title</label>
           <input type="text" onChange={(e) => {
