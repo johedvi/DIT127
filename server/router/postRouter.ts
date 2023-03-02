@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { Post } from "../model/Post";
+import { Post, IPost } from "../model/Post";
 import { Account } from "../model/Account";
 import { Comment } from "../model/Comment";
 import { Forum } from "../model/Forum";
@@ -54,7 +54,7 @@ postRouter.put('/',async(
         }
         /* Check logged in */
         if(req.session.user===undefined){
-            res.status(403).send(`Bad PUT request to /post --- User most be signed in`);
+            res.status(401).send(`Bad PUT request to /post --- User most be signed in`);
             return;
         }
         /* Check if user exists */
@@ -69,7 +69,6 @@ postRouter.put('/',async(
         const getPost = await postModel.create(newPost);
         const postObjectId = getPost._id;
         const updateForumObject = await forumModel.findOneAndUpdate({title : req.body.fid},{ $push: {posts : postObjectId}},{new : true});
-        console.log(updateForumObject);
         if(updateForumObject===null){
             res.status(500).send(`Error at updating forum posts`);
             return;
@@ -81,56 +80,45 @@ postRouter.put('/',async(
 
 /* Retrieve a post in a specific subforum */
 postRouter.get("/:pid",async(
-    req : Request<{id : string, pid : string},{},{}>,
-    res : Response<Post |String>
+    req : Request<{forumId : string, pid : number},{},{}>,
+    res : Response<IPost |String>
 )=>{
     try{
-        const forumExists = await forumService.findForum(req.params.id);
-        if(forumExists==null){
-            res.status(404).send(`Forum ${req.params.id} not found.`)
+        const getPost = await postService.getPost(req.params.pid);
+        if(getPost==null){
+            res.status(404).send(`Bad GET call to ${req.originalUrl} --- Post does not exist.`);
             return;
         }
-        const post = forumExists.posts.find((p)=>p.title==req.params.pid);
-        if(post==null){
-            res.status(404).send(`Post ${req.params.pid} not found.`);
-            return;
-        }
-        res.status(200).send(post);
+        res.status(200).send(getPost);
     }catch(e : any){
-        res.status(500).send(`Unable to retrieve post ${req.params.pid} from forum ${req.params.id} with error ${e.message}`);
+        res.status(500).send(`Unable to retrieve post ${req.params.pid} from forum ${req.params.forumId} with error ${e.message}`);
     }
 });
 
 /* Comment on a specific post */
 postRouter.put("/:pid/comment", async(
-    req : Request<{id : string, pid : string},{},{author : string, content : string}> & {
+    req : Request<{forumId : string, pid : number},{},{content : string}> & {
         session : {
             user? : Account
         }
     },
-    res : Response<Comment|String>
+    res : Response<IPost|String>
 )=>{
     try{
-        const forumExists = await forumService.findForum(req.params.id);
-        if(forumExists==null){
-            res.status(404).send(`Forum ${req.params.id} not found.`)
-            return;
-        }
-        const post = forumExists.posts.find((p)=>p.title==req.params.pid);
-        if(post==null){
-            res.status(404).send(`Post ${req.params.pid} not found.`);
-            return;
-        }
+        /* Check if user is authorized */
         if(req.session.user===undefined){
+            res.status(401).send(`Bad PUT to ${req.originalUrl} --- Unauthorized, user must be logged in`);
             return;
         }
-        const comment = new Comment(req.session.user,req.body.content);
-        const commented = post.addComment(comment);
-        if(commented==false){
-            res.status(500).send(`Unable to post comment`);
+        /* Create comment and add it to list of comments to this post */
+        const comment = {author : req.session.user.username , content : req.body.content, rating : 0};
+        const response = await postService.submitComment(req.params.pid,comment);
+        /* If False, user does not exist OR failure to create comment / push to comments[] */
+        if(response===false){
+            res.status(500).send(`Bad PUT to ${req.originalUrl} --- Authorization- or comment issue`);
             return;
         }
-        res.status(201).send(comment);
+        res.status(201).send(response);
     } catch(e:any){
         res.status(500).send(`Server error ${e.message}`);
     }

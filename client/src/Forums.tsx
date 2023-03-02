@@ -20,7 +20,6 @@ function App() {
   const [forums, setForums] = useState<Forum[]>([]);
   const [forumName, setName] = useState<String>();
   const [forumDesc, setDesc] = useState<String>();
-  const [forumAuth, setAuth] = useState<String>();
 
   async function updateForums() {
     const response = await axios.get<Forum[]>("http://localhost:8080/forum");
@@ -36,8 +35,17 @@ function App() {
       <div>
         <h1> Forums </h1>
         <form id="createForum" onSubmit={async e => {
-          e.preventDefault();
-          await axios.put("http://localhost:8080/forum", { title: forumName, description: forumDesc, author: forumAuth }); updateForums();
+          try{
+            e.preventDefault();
+            await axios.put("http://localhost:8080/forum", { title: forumName, description: forumDesc}); updateForums();
+          }catch(e:any){
+            switch(e.response.status){
+              case 400: alert("The title or body contains illegal characters, please try again"); break;
+              case 401: alert("Please sign in before creating a forum"); break;
+              case 409: alert("The forum name " + forumName + " is alrady taken, please choose another"); break;
+              default : alert("Unexpected error at post creating"); break;
+            }
+          }
         }}>
           <div className="inputBlock">
           <label>Forum name</label>
@@ -50,13 +58,6 @@ function App() {
           <label>Forum description</label>
           <input type="text" id="forumdesc" placeholder="Description" onChange={(e) => {
             setDesc(e.target.value);
-          }} />
-          </div>
-          
-          <div className="inputBlock">
-          <label>Your name</label>
-          <input type="text" id="forumauth" placeholder="Author" onChange={(e) => {
-            setAuth(e.target.value);
           }} />
           </div>
           <input type="submit" value="Create" />

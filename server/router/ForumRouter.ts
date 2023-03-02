@@ -39,7 +39,7 @@ forumRouter.put('/', async(
 ) => {
     try {
         if(req.session.user===undefined){ // must be logged in
-            res.status(403).send(`Bad PUT request to Forum --- User must be logged in`);
+            res.status(401).send(`Bad PUT request to Forum --- User must be logged in`);
             return;
         }
         const title = req.body.title;
@@ -51,6 +51,10 @@ forumRouter.put('/', async(
         typeof(author)!=="string"){res.status(400).send("Bad input");return;}
         /* Else... */
         const newForum = await forumService.createForum(title,description,author);
+        if(newForum===undefined){
+            res.status(409).send(`Bad PUT request to Forum --- Forum Name ${title} is already taken.`);
+            return;
+        }
         res.status(201).send(newForum);
     } catch(e:any){
         res.status(500).send(e.message);

@@ -67,7 +67,7 @@ function App() {
   );
 
   function DisplayPosts(post : Post) {
-    return <li><a href={"/forum/"+page?.title+"/post/"+post.title}>{post.title}</a>
+    return <li><a href={"/forum/"+page?.title+"/post/"+post.id}>{post.title}</a>
     {" posted by "}
     <a href={"/profile/"+post.author}>{post.author}</a>
     </li>

@@ -12,8 +12,13 @@ type Tuple = {
     vote : voteType
 }
 
+export interface IComment {
+    author  :   String|Account;
+    content :   String;
+    rating  :   Number;
+}
 
-export class Comment {
+export class Comment implements IComment {
     author  : Account|string; // User who published the comment
     content : string; // The message
     rating  : number; // The rating (upvotes & downvotes) from other users
