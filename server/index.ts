@@ -1,5 +1,5 @@
 import express from "express";
-import { forumRouter } from "./router/forumRouter";
+import { forumRouter } from "./router/ForumRouter";
 import { postRouter } from "./router/postRouter";
 import { userRouter } from "./router/userRouter";
 import session from "express-session";
