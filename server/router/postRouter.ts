@@ -52,36 +52,29 @@ postRouter.put('/',async(
             res.status(404).send(`Forum ${req.body.fid} not found.`);
             return;
         }
-        /* Check if user exists */
+        /* Check logged in */
         if(req.session.user===undefined){
             res.status(403).send(`Bad PUT request to /post --- User most be signed in`);
             return;
         }
-        /* Create post and add to forum */
+        /* Check if user exists */
         const getUserId = await accountModel.findOne({username : req.session.user.username});
         if(getUserId===null){
+            res.status(500).send(`Bad PUT request to /post --- User does not exist`);
             return;
         }
+        /* Create post and add to list of posts to specified forum */
         const postId = Date.now().valueOf();
         const newPost = {id : postId, title : req.body.title, content : req.body.content, author : getUserId, comments : []};
-        const response = postModel.create(newPost,function(err,post){
-            if(err) return false;
-            return post._id;
-        });
-        if(response.getErr){
-            res.status(500).send(`Unable to submit post to ${req.body.fid}`);
-            return;
-        }
-        const getPost = await postModel.findOne({id : postId});
-        if(getPost===null){
-            return;
-        }
+        const getPost = await postModel.create(newPost);
         const postObjectId = getPost._id;
         const updateForumObject = await forumModel.findOneAndUpdate({title : req.body.fid},{ $push: {posts : postObjectId}},{new : true});
+        console.log(updateForumObject);
         if(updateForumObject===null){
             res.status(500).send(`Error at updating forum posts`);
             return;
         }
+        /* Forum successfully updated, return new forum object */
         res.status(201).send(updateForumObject);
     }catch(e:any){res.status(500).send(e.message);}
 });
