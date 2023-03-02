@@ -32,7 +32,7 @@ class ForumDBService implements IForumService{
 
     /* Search for a specific forum. Returns the forum if found, undefined otherwise. */
     async findForum(input: string): Promise<Forum | undefined> {
-        const result = await forumModel.findOne({title : input});
+        const result = await forumModel.findOne({title : input}).populate('posts');
         if(result===null){return undefined}
         return result;
     }
