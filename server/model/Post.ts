@@ -1,7 +1,15 @@
 import { Comment } from "./Comment";
 import { Account } from "./Account";
 
-export class Post{
+export interface IPost {
+    id      : Number;
+    title   : String,
+    content : String,
+    author  : Account|String;
+    comments: Comment[];
+}
+
+export class Post implements IPost{
     id       : Number;
     title    : string; // Title of the post
     content  : string; // The body of the post - what the author has published

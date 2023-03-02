@@ -1,19 +1,42 @@
+import axios from 'axios';
 import './main.css';
 
-import React, {useState} from 'react'
+import React, { useEffect, useState } from 'react'
 
-
-
-
-
-
+interface Account {
+  username: string
+}
 function Navbar() {
 
-const [searchInput, setSearchInput] = useState<String>();
+  const [searchInput, setSearchInput] = useState<String>(); // What the user types in the search bar
+  const [userStatus, setUserStatus] = useState<Account | undefined>(undefined); // If a user is logged in (Account) or not (undefined)
 
+  async function getStatus() {
+    const response = await axios.get("http://localhost:8080/login/");
+    setUserStatus(response.data.username);
+  }
+  async function logOut(){
+
+  }
+  useEffect(() => {
+    getStatus();
+  },[])
+
+  /* Changes the sign in / log out button */
+  function SignInOut() {
+    const signIn = <form action="/login">
+      <input className="btn btn-outline-danger" type="submit" value="Sign in" />
+    </form>
+    const logOut = <form onSubmit={async e=>{
+      await axios.get("http://localhost:8080/login/logout");
+    }}>
+      <input className="btn btn-outline-danger" type="submit" value="Logout" />
+    </form>
+    return (userStatus === undefined) ? signIn : logOut;
+  }
 
   return (
-      <><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" /><nav className="navbar navbar-expand-lg bg-body-tertiary">
+    <><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" /><nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
@@ -45,29 +68,20 @@ const [searchInput, setSearchInput] = useState<String>();
           </ul>
 
           <form className="d-flex" role="search">
-         
+
             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-         
+
           </form>
 
           <form action="/search">
-              <input className="btn btn-outline-primary" type="submit" value="Search"/>
-              </form>
-       
-    
-          
+            <input className="btn btn-outline-primary" type="submit" value="Search" />
+          </form>
+
+
+
 
           <button className="btn btn-outline-secondary" type="submit">COGWHEEL</button>
-          {
-            /* if (logged in) {
-              <a href="profile"><img src="user.avatar"></img></a>
-            }
-            // else { */
-              <form action="/login">
-              <input className="btn btn-outline-danger" type="submit" value="Sign in"/>
-              </form>
-            //}
-          }
+          <SignInOut></SignInOut>
         </div>
       </div>
     </nav></>

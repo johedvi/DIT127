@@ -13,6 +13,9 @@ export interface IAccountService {
     // Change a users account password. True if successful.
     // False if new password don't meet requirements.
     changePassword(a : string, op : string, np : string) : Promise<boolean>;
+
+    // Returns the users non-sensitive information, undefined otherwise
+    getUserInfo(a : string) : Promise<undefined | Account>;
 }
 
 class AccountDBService implements IAccountService {
@@ -40,6 +43,20 @@ class AccountDBService implements IAccountService {
         const response = accountModel.findOneAndUpdate({username : a, password : op}, {password : np});
         if(response===null){return false;} // Account doesn't exist
         return true;
+    }
+
+    /**
+     * Retrieves a user's non-sensitive information such as username, settings and preferences.
+     * Returns undefined if not found.
+     * @param username The specified user's username to retrieve information from
+     * @returns The user information if found, undefined otherwise
+     */
+    async getUserInfo(username: string): Promise<Account | undefined> {
+        const response = await accountModel.findOne({username : username}).select(['username']);
+        if(response===null){
+            return undefined;
+        }
+        return response;
     }
 }
 

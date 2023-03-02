@@ -21,11 +21,4 @@ app.use(express.json());
 app.use("/forum",forumRouter); // Handle all /forum requests
 app.use("/login",userRouter);
 app.use("/forum/:forumId/post", postRouter); // Handle post / comment requests
-app.get("/logout",async(req, res)=>{
-    try{
-        req.session.destroy(((err)=>{
-            res.redirect('/');
-        }));
-    }catch(e:any){res.redirect('/');}
-})
 app.listen(8080);

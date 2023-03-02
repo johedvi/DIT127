@@ -20,13 +20,23 @@ type LoginRequest = Request & {
         }
 }
 
-/*  */  
+/* Get session status. If logged in returns non-sensitive user information, else nothing. */  
 userRouter.get("/", async(
-        req : Request<{},{},{}>, 
-        res : Response
+        req : Request<{},{},{}> & {
+                session : {
+                        user? : Account
+                }
+        }, 
+        res : Response<Account | String>
         ) => {
         try{
-                res.status(200).send("Blank page");
+                /* User is not logged in */
+                if(req.session.user===undefined){
+                        res.status(204).send("User is not logged in");
+                        return;
+                }
+                const response = await accountService.getUserInfo(req.session.user.username)
+                res.status(200).send(response);
         }catch(e: any){
                 res.status(500).send("Bad response from Login page - server error");
         }
@@ -79,3 +89,13 @@ userRouter.put("/", async (req : Request<{},{},{username : string, password : st
                 res.status(500).send(e.message);
         }
 });
+
+/* Logout from the account / destroy the session */
+userRouter.get('/logout',async(req, res)=>{
+        try{
+            req.session.destroy(((err)=>{
+                res.redirect('back');
+            }));
+        }catch(e:any){
+            res.redirect('/');}
+    })
