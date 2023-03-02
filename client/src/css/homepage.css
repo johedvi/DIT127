@@ -1,0 +1,21 @@
+@keyframes background{
+  0% {background-color: rgb(255, 200, 129);}
+  50% {background-color: rgb(223, 152, 47);}
+  100% {background-color: rgb(255, 200, 129);}
+}
+
+body {
+  background-color:rgb(255, 200, 129);
+  animation-name: background;
+  animation-duration:3s;
+  animation-iteration-count: infinite;
+}
+
+.maintopic {
+  margin-top:25px;
+  margin-bottom:25px;
+}
+
+.maintopic last-child{
+  margin-bottom:none;
+}

@@ -1,6 +1,6 @@
 function App() {  
   return (
-    require('./merch.css'),
+    require('./css/merch.css'),
     <>
       <div>
         <h1> Merch </h1>

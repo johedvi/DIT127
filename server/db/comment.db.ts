@@ -13,7 +13,6 @@ const commentSchema : Schema = new Schema({
 
     content : {
         type: String,
-
         required: true
     },
 
@@ -29,4 +28,4 @@ const commentSchema : Schema = new Schema({
       }],
 })
 
-export const comment = conn.model<Comment>("Comment", commentSchema);
+export const commentModel = conn.model<Comment>("Comment", commentSchema);

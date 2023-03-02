@@ -31,7 +31,7 @@ function App() {
   }, [])
   
   return (
-    require("./forum.css"), // <-- avoid importing file until necessary, avoiding unused and conflicting css
+    require("./css/forum.css"), // <-- avoid importing file until necessary, avoiding unused and conflicting css
     <>
       <div>
         <h1> Forums </h1>
