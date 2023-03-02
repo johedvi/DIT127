@@ -21,6 +21,11 @@ export interface IForumService{
 }
 
 class ForumDBService implements IForumService{
+
+    stripUsers(f : Forum){
+
+    }
+
     /* Retrieves all existing forums. */
     async getForums(): Promise<IForum[]> {
         const response = await forumModel.find().populate('author');
@@ -32,10 +37,37 @@ class ForumDBService implements IForumService{
 
     /* Search for a specific forum. Returns the forum if found, undefined otherwise. */
     async findForum(input: string): Promise<Forum | undefined> {
-        const result = await forumModel.findOne({title : input}).populate('posts');
+        const result = await forumModel.findOne({title : input}).populate([{
+            path : 'author',
+            transform : a => a == null ? null : a.username
+        },{
+            path : 'users',
+            transform : u => u == null ? null : u.username
+        },{
+            path : 'posts',
+            populate : 'author',
+            transform : p => p == null ? null : {id : p.id, title : p.title, author : p.author.username, comments : p.comments.length}
+        }]);
         if(result===null){return undefined}
+        //console.log(result);
         return result;
     }
+    /*
+    [{
+            path : 'author',
+            transform : a => a == null ? null : a.username
+        },{
+            path : 'users',
+            transform : u => u == null ? null : u.username
+        },{
+            path : 'posts',
+            transform : p => p = {id : p.id, title : p.title, author : p.author, comments : p.comments.length}
+        },{
+            path : "posts.$*author",
+            transform : u => u == null ? null :  u.username
+        }
+    ]
+    */
 
     /* Creates a forum and returns the new forum if successful, undefined otherwise. */
     async createForum(title: string, description: string, author: string): Promise<Forum | undefined> {

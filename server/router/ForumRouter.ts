@@ -60,19 +60,19 @@ forumRouter.put('/', async(
 /* Retrieve specific forum on /forum/ID */
 forumRouter.get("/:id",async(
     req: Request<{ id: string }, {}, {}>,
-    res: Response<string>
+    res: Response<Forum | string>
 ) => {
     try{
-        if(req.params.id==null){
-            res.status(400).send(`Bad GET call to ${req.originalUrl} --- missing id param`);
+        if(req.params.id==null){ // No forum specified
+            res.status(400).send(`Bad GET call to ${req.originalUrl} --- missing id param.`);
             return;
         }
         const forum = await forumService.findForum(req.params.id);
         if(forum==undefined){ // Forum doesn't exist
-            res.status(404).send(`Forum ${req.params.id} not found.`);
+            res.status(404).send(`Bad GET call to ${req.originalUrl} --- Forum ${req.params.id} not found.`);
             return;
         }
-        res.status(200).send(JSON.stringify(forum));
+        res.status(200).send(forum);
     }catch(e:any){
         res.status(500).send(e.message);
     }
