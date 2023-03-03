@@ -1,6 +1,5 @@
 function Home() {
   return (
-    require('./css/homepage.css'),
     <div className="container-fluid text-center maincontent bganim">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"></link>
       <div className="row">

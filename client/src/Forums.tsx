@@ -49,14 +49,14 @@ function App() {
         }}>
           <div className="inputBlock">
           <label>Forum name</label>
-          <input type="text" id="forumname" placeholder="Name" onChange={(e) => {
+          <input type="text" placeholder="Name" onChange={(e) => {
             setName(e.target.value);
           }} />
           </div>
           
           <div className="inputBlock">
           <label>Forum description</label>
-          <input type="text" id="forumdesc" placeholder="Description" onChange={(e) => {
+          <input type="text" placeholder="Description" onChange={(e) => {
             setDesc(e.target.value);
           }} />
           </div>
@@ -64,12 +64,14 @@ function App() {
         </form> 
 
         <div className="forums">
-          {forums.map((forum) => <DisplayForum
-            key={forum.title}
-            title={forum.title}
-            description={forum.description}
-            author={forum.author}
-            posts={forum.posts} />)}
+          <ul>
+            {forums.map((forum) => <DisplayForum
+              key={forum.title}
+              title={forum.title}
+              description={forum.description}
+              author={forum.author}
+              posts={forum.posts} />)}
+          </ul>
         </div>
       </div>
     </>
@@ -79,31 +81,24 @@ function App() {
 function DisplayForum(forum: Forum) {
   return (
       <div className="forumBlock">
+        <a className="forumAuthor" href={"profile/"+forum.author}>{forum.author ? ("Posted by " + forum.author) : "Author"}</a>
+
         <a className="forumLink" href={"/forum/"+forum.title}>
-        <div className="forumTitle">
-          <h2>{forum.title}</h2>
-        </div></a>
-        <a href={"profile/"+forum.author}>
-          <div className="forumAuthor">
-            <h5>{forum.author ? forum.author : "Author"}</h5>
-          </div>
-        </a>
-        <div className="forumDescription">
-          <h5>{forum.description}</h5>
-        </div>
+        <h2 className="forumTitle">{forum.title}</h2></a>
+
+        <h5 className="forumDescription">{forum.description}</h5>
         <div className="icons">
           <a href={"#subscribe"}>
             {
-              /* if (author subscribed to forum) {
-                <img src="starY.png"></img>
-              } */
+              //if (author subscribed to forum) {
+              //  <img src="starY.png"></img>
+              //} 
             // else 
             <img src="star.png"></img>
             }
           </a>
         </div>
       </div>
-
   )
 }
 export default App;

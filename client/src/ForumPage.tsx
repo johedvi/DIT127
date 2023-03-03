@@ -34,44 +34,52 @@ function App() {
   },[])
   
   return (
+    require("./css/forumPage.css"),
     <>
       <div>
       <h2>{"Welcome to - " + page?.title}</h2>
       <h3>{page?.description + " - " + page?.author}</h3>
-        <form onSubmit={async e => {
+        <form id="createPost" onSubmit={async e => {
           e.preventDefault();
           await axios.put("http://localhost:8080/forum/"+forumId+"/post", {fid : forumId, title: postTitle, content: postBody}); updateForums();
         }}>
+          <div className="inputBlock">
           <label>Post Title</label>
-          <input type="text" onChange={(e) => {
+          <input id="title" type="text" onChange={(e) => {
             setTitle(e.target.value);
           }}/>
+          </div>
+
+          <div className="inputBlock">
           <label>Post Body</label>
-          <input type="text" onChange={(e) => {
+          <input id="content" type="text" onChange={(e) => {
             setBody(e.target.value);
           }}/>
           <input type="submit" value="Post!"/>
+          </div>
         </form>
 
     
-
-        {page?.posts.map((post) => <DisplayPosts
-          key={post.id}
-          id={post.id}
-          title={post.title}
-          author={post.author}
-          comments={post.comments}
-          />)}
+        <ul className="list-group maintopic">
+          {page?.posts.map((post) => <DisplayPosts
+            key={post.id}
+            id={post.id}
+            title={post.title}
+            author={post.author}
+            comments={post.comments}
+            />)}
+        </ul>
       </div>
     </>
   );
 
   function DisplayPosts(post : Post) {
-    return <li><a href={"/forum/"+page?.title+"/post/"+post.id}>{post.title}</a>
-    {" posted by "}
-    <a href={"/profile/"+post.author}>{post.author}</a>
+    return (
+    <li className="list-group-item d-flex justify-content-between align-items-center">
+      <a href={"/forum/"+page?.title+"/post/"+post.id}>{post.title}</a>
+      <a href={"/profile/"+post.author}>{"posted by " + post.author}</a>
     </li>
-  }
+  )}
 }
 
 

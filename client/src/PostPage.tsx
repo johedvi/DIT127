@@ -36,19 +36,17 @@ function App() {
     }, [])
 
     return (
+        require("./css/postPage.css"),
         <div>
             <h1>{posts.title}</h1>
-            <h3>{posts.author}</h3>
-            <p>{posts.content}</p>
+            <h3>{"Posted by " + posts.author}</h3>
+            <div className="post">
+                <p className="postContent">{posts.content}</p>
+            </div>
 
-            {posts.comments.map((comment) => <DisplayComment
-                author={comment.author}
-                content={comment.content}
-                rating={comment.rating}
-            />)}
 
-            <h4>{"Comments"}</h4>
-            <form onSubmit={async e => {
+            
+            <form id="createComment" onSubmit={async e => {
                 try {
                     e.preventDefault();
                     await axios.put("http://localhost:8080/forum/" + forumId + "/post/" + postId + "/comment", { content: commentBody });
@@ -66,11 +64,21 @@ function App() {
                 }} />
                 <input type="submit" value="Comment!" />
             </form>
+
+            <h4>{"Comments"}</h4>
+            {posts.comments.map((comment) => <DisplayComment
+                author={comment.author}
+                content={comment.content}
+                rating={comment.rating}
+            />)}
         </div>
     );
 }
 
 function DisplayComment(comment: IComment) {
-    return <li>{comment.author} - {comment.content} : {comment.rating}</li>
+    return <li className="comment"><a href={"/profile/"+comment.author}>{"posted by " + comment.author}</a> 
+    <p className="rating">{"Rating: " + comment.rating}</p>
+    <p>{comment.content}</p>
+    </li>
 }
 export default App;
