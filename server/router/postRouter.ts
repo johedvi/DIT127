@@ -123,3 +123,22 @@ postRouter.put("/:pid/comment", async(
         res.status(500).send(`Server error ${e.message}`);
     }
 })
+
+/*postRouter. something("/:pid/comment", async(
+    req : Request<{forumId : string, pid : number},{},{comment : string, vote : number}> & {
+        session : {
+            user? : Account
+        }
+    },
+    res : Response<Boolean>
+    )=>{
+        if(req.session.user===undefined){
+            res.status(401).send(`User must be logged in`);
+            return;
+        }
+        const comment = //get comment;
+        const vote = vote > 0 ? postService.upVote(comment) : postService.downVote(comment);
+        if (vote==null) { send error return }
+        ....
+    }
+))*/
