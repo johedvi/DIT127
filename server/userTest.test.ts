@@ -13,10 +13,10 @@ const password = "PASSWORD";
 //accountService.createAccount(username, password);
 
 // Duplicate key error, not sure what test expect to use.
-/*test("Check if we can create user with similar username",
+test("Check if we can create user with similar username",
 async()=>{
     expect(await accountService.createAccount(username, password)).rejects.toThrow();
-})*/
+})
 
 test("Username taken", 
 async()=>{

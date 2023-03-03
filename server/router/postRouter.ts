@@ -124,21 +124,31 @@ postRouter.put("/:pid/comment", async(
     }
 })
 
-/*postRouter. something("/:pid/comment", async(
-    req : Request<{forumId : string, pid : number},{},{comment : string, vote : number}> & {
+/* Upvotes / downvotes a comment on a post */
+postRouter.post("/:pid/comment", async(
+    req : Request<{forumId : string, pid : number},{},{comment : number, vote : boolean}> & {
         session : {
             user? : Account
         }
     },
-    res : Response<Boolean>
+    res : Response<Boolean|String>
     )=>{
+        const comment = req.body.comment;
+        const vote = req.body.vote;
+        if(typeof(comment)!=='number'||typeof(vote)!=='boolean'){
+            res.status(400).send(`Expected comment id of type number, vote of type boolean, got ${typeof(comment)} and ${typeof(vote)}`);
+            return;
+        }
         if(req.session.user===undefined){
             res.status(401).send(`User must be logged in`);
             return;
         }
-        const comment = //get comment;
-        const vote = vote > 0 ? postService.upVote(comment) : postService.downVote(comment);
-        if (vote==null) { send error return }
-        ....
+        const voteType = (vote===true) ? 1 : -1;
+        const result = postService.voteComment(comment,req.session.user.username,voteType);
+        if(!result){
+            res.status(500).send(`Comment voting error`);
+            return;
+        }
+        res.status(200).send(`Voting successful`);
     }
-))*/
+)

@@ -81,7 +81,7 @@ function App() {
 function DisplayForum(forum: Forum) {
   return (
       <div className="forumBlock">
-        <a className="forumAuthor" href={"profile/"+forum.author}>{forum.author ? ("Posted by " + forum.author) : "Author"}</a>
+        <a className="forumAuthor" href={"profile/"+forum.author}>{forum.author ? ("Created by " + forum.author) : "Author"}</a>
 
         <a className="forumLink" href={"/forum/"+forum.title}>
         <h2 className="forumTitle">{forum.title}</h2></a>

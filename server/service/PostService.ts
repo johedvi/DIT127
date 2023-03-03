@@ -19,11 +19,7 @@ export interface IPostService {
 
     // Upvotes the comment on index n inside the post and returns true.
     // Returns false if no comment with index n.
-    //upvoteComment(n : number) : Promise<Boolean>;
-
-    // Downvotes the comment on index n inside the post and returns true.
-    // Returns false if no comment with index n.
-    //downvoteComment(n : number) : Promise<Boolean>;
+    voteComment(cid : number, ratee : string, type : number) : Promise<Boolean>;
 }
 
 class PostDBService implements IPostService{
@@ -43,7 +39,7 @@ class PostDBService implements IPostService{
                 path : 'author',
                 transform : a => a = a.username
             },
-            transform : c => c = {author : c.author, content : c.content, rating : c.rating}
+            transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating}
             
         }]);
         if(response===null){return undefined};
@@ -70,7 +66,8 @@ class PostDBService implements IPostService{
         }
         /* Create comment and add to post's list of comments, returning the populated fields
             without sensitive information. */
-        const commentJSON = {author : getAuthorId, content : commentData.content, rating : 1, ratees : [getAuthorId]};
+        const getDate = Date.now().valueOf();
+        const commentJSON = {id : getDate, author : getAuthorId, content : commentData.content, rating : 1, ratees : [getAuthorId]};
         const createComment = await commentModel.create(commentJSON);
         const updateQuery = {$push: {comments : createComment._id}};
         const addCommentToPost = await postModel.findOneAndUpdate({id : postId},updateQuery,{new:true}).populate([{
@@ -82,7 +79,7 @@ class PostDBService implements IPostService{
                 path : 'author',
                 transform : a => a = a.username
             },
-            transform : c => c = {author : c.author, content : c.content, rating : c.rating}
+            transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating}
         }]);
         /* Check if post Update failed */
         if(addCommentToPost===null){
@@ -92,14 +89,14 @@ class PostDBService implements IPostService{
     }
 
     /* Upvotes a comment, returns true if successful false otherwise*/
-    /*async upvoteComment(n: number): Promise<Boolean> {
-        
+    async voteComment(commentId : number, ratee : string, updown : number): Promise<Boolean> {
+        const getUserId = await accountModel.findOne({username : ratee});
+        if(getUserId===null){return false;} // User not found
+        const response = await commentModel.findOneAndUpdate({id : commentId},{$push : {ratees : getUserId}, $inc: {rating : updown}})
+        console.log(response);
+        if(response===null){return false;}
+        return true;
     }
-
-    Downvotes a comment, returns true if successful false otherwise
-    async downvoteComment(n: number): Promise<Boolean> {
-        
-    }*/
 }
 
 export function makePostService() : IPostService{

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import { getCommentRange } from "typescript";
 interface IComment {
+    id : number,
     author: String,
     content: String,
     rating: number
@@ -22,6 +23,18 @@ function App() {
     const defaultPost = { id: -1, title: "Loading...", content: "Loading...", author: "Loading...", comments: [] }
     const [posts, setPosts] = useState<IPost>(defaultPost);
 
+    async function upVote(commentId : number, type : boolean) {
+        const response = await axios.post('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment',{
+            comment : commentId,
+            vote : type
+        })
+        if(response.status===200){
+            getPost();
+            return;
+        }
+        alert("Something went wrong. Please try again");
+    }
+
     /* Fetches new/updated Post object */
     async function getPost() {
         const getPost = (postId == null) ? "" : postId;
@@ -34,6 +47,13 @@ function App() {
     useEffect(() => {
         getPost();
     }, [])
+
+    function DisplayComment(comment: IComment) {
+        return <li className="comment"><a href={"/profile/"+comment.author}>{"posted by " + comment.author}</a> 
+        <p className="rating"><a href="#" onClick={e=>upVote(comment.id,true)}>{String.fromCharCode(8593)}</a>{" Rating: " + comment.rating + " "}<a href="#" onClick={e=>upVote(comment.id,false)}>{String.fromCharCode(8595)}</a></p>
+        <p>{comment.content}</p>
+        </li>
+    }
 
     return (
         require("./css/postPage.css"),
@@ -67,23 +87,14 @@ function App() {
 
             <h4>{"Comments"}</h4>
             {posts.comments.map((comment) => <DisplayComment
+                key={comment.id}
+                id={comment.id}
                 author={comment.author}
                 content={comment.content}
                 rating={comment.rating}
             />)}
         </div>
     );
-}
-
-function DisplayComment(comment: IComment) {
-    return <li className="comment"><a href={"/profile/"+comment.author}>{"posted by " + comment.author}</a> 
-    <p className="rating"><a href="#" onClick={upVote}>{String.fromCharCode(8593)}</a>{" Rating: " + comment.rating + " "}<a href="#" onClick={upVote}>{String.fromCharCode(8595)}</a></p>
-    <p>{comment.content}</p>
-    </li>
-}
-
-async function upVote() {
-    // ....... some call to router?
 }
 
 async function downVote() {

@@ -5,6 +5,7 @@ import { Account } from "../model/Account";
 
 const commentSchema : Schema = new Schema({
 
+    id : Number,
     author : {
         type : Schema.Types.ObjectId,
         ref: 'Account',
@@ -24,6 +25,7 @@ const commentSchema : Schema = new Schema({
     ratees : [{
         type : Schema.Types.ObjectId,
         ref : 'Account',
+        unique : true,
         required : true
       }]
 })
