@@ -7,6 +7,10 @@ h1 {
   margin: 48px auto;
 }
 
+#formImg {
+  max-width: 48px;
+}
+
 .inputBlock {
   display: inline-block;
   margin: 0 8px;
