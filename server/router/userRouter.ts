@@ -10,11 +10,7 @@ interface Account {
         username : string
 }
 
-type LoginRequest = Request & {
-        body: {
-                username : string
-                password : string
-        }
+type SessionRequest = {
         session : {
                 user ?: Account
         }
@@ -44,10 +40,14 @@ userRouter.get("/", async(
 
 /* Log into an existing account */
 userRouter.post("/", async(
-        req : LoginRequest,
+        req : Request<{},{},{username : string, password : string}> & SessionRequest,
         res : Response
 )=>{
         try{
+                if(req.session.user!==undefined){
+                        res.status(401).send(`Bad POST to login - Please sign out before logging in.`);
+                        return;
+                }
                 if(typeof(req.body.username)!=="string"){
                         res.status(400).send(`Bad POST to login - username is not of type 'string'.`);
                         return;
@@ -69,7 +69,10 @@ userRouter.post("/", async(
 });
 
 /* Create a new account */
-userRouter.put("/", async (req : Request<{},{},{username : string, password : string}>, res : Response<Account | String>) => {
+userRouter.put("/", async (
+        req : Request<{},{},{username : string, password : string}> & SessionRequest, 
+        res : Response<Account | String>
+) => {
         try{
                 if(typeof (req.body.username) !== "string"){
                         res.status(400).send(`Bad PUT to login - username is not of type 'string'.`);
@@ -84,6 +87,7 @@ userRouter.put("/", async (req : Request<{},{},{username : string, password : st
                         res.status(409).send(`Bad PUT to login - username ${req.body.username} is already taken.`);
                         return;
                 }
+                req.session.user = accountCreationResult;
                 res.status(201).send(accountCreationResult);
         }catch(e:any){
                 res.status(500).send(e.message);

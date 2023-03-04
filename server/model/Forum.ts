@@ -1,12 +1,18 @@
 import { Post } from "./Post"; 
 import { Account } from "./Account";
 
+/**
+ * An IForum always has a title of type string, a description of type string, and an author/owner of type string or Account.
+ */
 export interface IForum {
     title       : string; // The unqiue ID of the forum - It's title
     description : string; // A short description about this subforum
     author : string | Account;
 }
 
+/**
+ * A Forum object extends the IForum interface with a list of subscribed users (Account[]) and a list of posts (Post[])
+ */
 export class Forum implements IForum {
     title       : string; // The unqiue ID of the forum - It's title
     description : string; // A short description about this subforum

@@ -19,6 +19,13 @@ export interface IAccountService {
 }
 
 class AccountDBService implements IAccountService {
+    /**
+     * Creates a new Account document in the database with the specified username and password.
+     * Returns an Account object if successful, false otherwise.
+     * @param u The username of the account
+     * @param p The password for the account
+     * @returns Account if successful
+     */
     async createAccount(u: string, p: string): Promise<false | Account> {
         const newAccount = new Account(u);
         const response = await accountModel.create({username : u, password : p})

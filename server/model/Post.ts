@@ -1,6 +1,9 @@
 import { Comment } from "./Comment";
 import { Account } from "./Account";
 
+/**
+ * An IPost object has a unique ID, a title, content (post body), an author and a list of comments.
+ */
 export interface IPost {
     id      : Number;
     title   : String,

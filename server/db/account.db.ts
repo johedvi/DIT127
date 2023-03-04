@@ -12,7 +12,11 @@ const accountSchema : Schema = new Schema({
 
  required : true,
 
- unique: true
+ unique: true,
+ 
+ min: 3,
+ 
+ max : 64
 
  },
 
@@ -20,14 +24,13 @@ const accountSchema : Schema = new Schema({
 
  type : String,
 
- required : true
+ required : true,
+
+ min : 8,
+
+ max : 64
 
  }
 
 });
-
-
-
-
-
 export const accountModel = conn.model<Account>('Account', accountSchema);
