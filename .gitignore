@@ -1,5 +1,6 @@
 server/*.js*
 server/*/*.js*
+server/DOCS
 
 
 # Logs

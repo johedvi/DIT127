@@ -1,9 +1,7 @@
 import { Post } from "./Post"; 
 import { Account } from "./Account";
 
-/**
- * An IForum always has a title of type string, a description of type string, and an author/owner of type string or Account.
- */
+
 export interface IForum {
     title       : string; // The unqiue ID of the forum - It's title
     description : string; // A short description about this subforum
@@ -11,10 +9,24 @@ export interface IForum {
 }
 
 /**
+ * An IForum always has a title of type string, a description of type string, and an author/owner of type string or Account.
+ * @interface IForum IForum
+ * @property {string} title -  The unqiue ID of the forum - Its title
+ * @property {string} description - A short description about this subforum
+ * @property {string | Account} author - The creator of the forum. May be the account object itself or just the username
+ */
+
+/**
  * A Forum object extends the IForum interface with a list of subscribed users (Account[]) and a list of posts (Post[])
+ * @implements {IForum}
+ * @param {string} title -  The unqiue ID of the forum - Its title
+ * @param {string} description - A short description about this subforum
+ * @param {string | Account} author - The creator of the forum
+ * @property {Account} users -  A list of users subscribed to the forum
+ * @property {Post} posts -  A list of posts created & available on the forum
  */
 export class Forum implements IForum {
-    title       : string; // The unqiue ID of the forum - It's title
+    title       : string; // The unqiue ID of the forum - Its title
     description : string; // A short description about this subforum
     author      : Account; // The creator of the forum
     users       : Account[]; // A list of users subscribed to the forum
