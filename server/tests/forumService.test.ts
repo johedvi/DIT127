@@ -3,6 +3,7 @@ import { Post } from "../model/Post";
 import { Comment } from "../model/Comment";
 import { makeForumService } from "../service/forumService";
 import { makeAccountService } from "../service/accountService";
+import { conn } from "../db/conn";
 const forumService = makeForumService();
 /*
 test("If a forum is created then it is added to the list of all available forums",
@@ -49,3 +50,24 @@ async()=>{
     }
 })
 */
+const user = {username : 'ForumServiceUser', password : 'ForumServicePass'};
+const forum = {title : 'ForumService', description : 'Forum Service test'};
+
+beforeAll(async()=>{
+    conn.useDb('test');
+    await conn.model('Account').findOneAndDelete({username : user.username});
+    await conn.model('Forum').findOneAndDelete({title : forum.title});
+
+    await conn.model('Account').create(user);
+})
+
+test("Forum Service - Forum Creation test",async()=>{
+    const response = await forumService.createForum(forum.title,forum.description,user.username);
+    expect(response!==undefined);
+    if(response===undefined){fail('Forum Service - Forum creation failed')};
+
+    expect(response.title).toEqual(forum.title);
+    expect(response.description).toEqual(forum.description);
+    expect(response.author).toEqual(user.username);
+});
+

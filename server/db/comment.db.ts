@@ -1,7 +1,5 @@
 import { Schema, Model, Callback } from "mongoose"
-import { IComment } from "../model/Comment" 
 import { conn } from "./conn";
-import { Account } from "../model/Account";
 
 const commentSchema : Schema = new Schema({
 

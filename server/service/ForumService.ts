@@ -1,6 +1,7 @@
 import { Forum, IForum } from "../model/Forum";
 import { Post } from "../model/Post";
 import { forumModel } from "../db/forum.db"
+import { Account } from "../model/Account";
 import { accountModel } from "../db/account.db";
 
 /* Populate() */
@@ -49,14 +50,14 @@ class ForumDBService implements IForumService{
     async findForum(input: string): Promise<Forum | undefined> {
         const result = await forumModel.findOne({title : input}).populate([{
             path : 'author',
-            transform : a => a == null ? null : a.username
+            transform : a => a = a.username
         },{
             path : 'users',
-            transform : u => u == null ? null : u.username
+            transform : u => u = u.username
         },{
             path : 'posts',
             populate : 'author',
-            transform : p => p == null ? null : {id : p.id, title : p.title, author : p.author.username, comments : p.comments.length}
+            transform : p => p = {id : p.id, title : p.title, author : p.author.username, comments : p.comments.length}
         }]);
         if(result===null){return undefined}
         return result;
@@ -71,12 +72,13 @@ class ForumDBService implements IForumService{
      * @returns {Promise<Forum | undefined>} Return sucessfully created Forum, otherwise undefined
      */
     async createForum(title: string, description: string, author: string): Promise<Forum | undefined> {
-        const lookup = await accountModel.findOne({username : author}); // Get user object
-        if(lookup===null){
+        const lookupUser = await accountModel.findOne({username : author}); // Get user object
+        if(lookupUser===null){
             return undefined;
         }
-        const newForum = {title : title, description : description, author : lookup._id, users : [lookup._id], posts : []};
+        const newForum = new Forum(title,description,lookupUser._id)
         const response = await forumModel.create(newForum);
+        console.log(response);
         return response;
     }
 

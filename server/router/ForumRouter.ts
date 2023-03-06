@@ -5,15 +5,6 @@ import { Account } from "../model/Account";
 import { makeForumService } from "../service/forumService";
 const forumService = makeForumService();
 
-type UserRequest = Request & {
-    body : {
-        title : String,
-        description : String
-    },
-    session : {
-        user? : Account
-    }
-}
 /* Allows this file to be exported/used in index.ts */
 export const forumRouter = express.Router();
 
@@ -53,7 +44,11 @@ forumRouter.get('/', async(
  * @throws {Interal} Something went wrong
  */
 forumRouter.put('/', async(
-    req: UserRequest,
+    req: Request<{},{},{title : string, description : string}> & {
+        session : {
+            user? : Account
+        }
+    },
     res: Response<Forum | string>
 ) => {
     try {

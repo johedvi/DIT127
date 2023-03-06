@@ -12,7 +12,10 @@ export const app = express();
 app.use(session({
     secret : "tempsecretkey", // Replace with .env file
     resave : true,
-    cookie : {maxAge : 1000*60*60*24}, // 24 hour sign-in time
+    cookie : {
+        maxAge : 1000*60*60*24, // Session lives for 24 hours
+        secure : false          // Allows for super-test to bypass session (only use during development)
+    },
     saveUninitialized : true
 }));
 app.use(cors({

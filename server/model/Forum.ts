@@ -8,13 +8,6 @@ export interface IForum {
     author : string | Account;
 }
 
-/**
- * An IForum always has a title of type string, a description of type string, and an author/owner of type string or Account.
- * @interface IForum IForum
- * @property {string} title -  The unqiue ID of the forum - Its title
- * @property {string} description - A short description about this subforum
- * @property {string | Account} author - The creator of the forum. May be the account object itself or just the username
- */
 
 /**
  * A Forum object extends the IForum interface with a list of subscribed users (Account[]) and a list of posts (Post[])

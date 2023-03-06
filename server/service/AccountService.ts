@@ -4,9 +4,6 @@ export interface IAccountService {
     /* Create an account with a unique username */
     createAccount(u : string, p : string) : Promise<false | Account>;
 
-    /* Checks if a specified username is already taken */
-    usernameTaken(u : string) : Promise<boolean>;
-
     /* Check if a user exists */
     userLogin(u : string, p : string) : Promise<null | Account>;
 
@@ -38,19 +35,8 @@ class AccountDBService implements IAccountService {
     }
 
     /**
-     * Checks if an username is taken.
-     * @async
-     * @param {string} u The username of the account
-     * @returns {Promise<boolean>} If account with username <u> exists, return true, else false
-     */
-    async usernameTaken(u: string): Promise<boolean> {
-        const response = accountModel.findOne({username : u});
-        if(response===null){return false;} // Username doesn't exist
-        return true;
-    }
-
-    /**
-     * Checks if an account exists
+     * Checks if an account exists, and that the passwords match.
+     * Used for authorization / logging in to an account
      * @async
      * @param {string} u The username of the account
      * @param {string} p The password for the account
