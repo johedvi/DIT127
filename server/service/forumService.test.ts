@@ -1,8 +1,8 @@
 import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
 import { Comment } from "../model/Comment";
-import { makeForumService } from "../service/forumService";
-import { makeAccountService } from "../service/accountService";
+import { makeForumService } from "./forumService";
+import { makeAccountService } from "./accountService";
 const forumService = makeForumService();
 /*
 test("If a forum is created then it is added to the list of all available forums",
