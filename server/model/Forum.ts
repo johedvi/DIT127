@@ -22,8 +22,8 @@ export interface IForum {
  * @param {string} title -  The unqiue ID of the forum - Its title
  * @param {string} description - A short description about this subforum
  * @param {string | Account} author - The creator of the forum
- * @property {Account} users -  A list of users subscribed to the forum
- * @property {Post} posts -  A list of posts created & available on the forum
+ * @property {Array.<Account>} users -  A list of users subscribed to the forum
+ * @property {Array.<Post>} posts -  A list of posts created & available on the forum
  */
 export class Forum implements IForum {
     title       : string; // The unqiue ID of the forum - Its title

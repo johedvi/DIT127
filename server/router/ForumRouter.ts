@@ -115,7 +115,7 @@ forumRouter.get("/:id",async(
  * @async
  * @method DELETE /forum/:id
  * @param {string} id - Title of the forum
- * @returns {void} Returns the fetched forum
+ * @returns {void}
  * @throws Bad DELETE call - Unauthorised
  * @throws Bad DELETE call - Missing id
  * @throws Bad DELETE call - Forum does not exist
