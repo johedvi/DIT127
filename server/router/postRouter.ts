@@ -18,8 +18,17 @@ export const postRouter = express.Router({mergeParams : true});
                 id = post specific ID
 i.e /forum/<forumId>/post/<id> */
 
+/** @module PostRouter */
 
-/* Retrieve all posts inside subforum */
+/** 
+ * Retrieve all posts inside subforum
+ * @async
+ * @method GET /forum/:forumId/post
+ * @param {string} fid - Forum id
+ * @returns {Array.<Post>} Returns an array of Posts for Forum <fid>
+ * @throws Bad GET call - Forum not found
+ * @throws {Internal} Server error
+ */
 postRouter.get('/',async(
     req : Request<{},{},{fid : string}>,
     res : Response<Post[] | string>
@@ -35,7 +44,19 @@ postRouter.get('/',async(
     }catch(e:any){res.status(500).send(e.message);}
 });
 
-/* Creates a post in a specific subforum */
+/** 
+ * Creates a post in a specific subforum
+ * @async
+ * @method PUT /forum/:forumId/post
+ * @param {string} fid - Forum id
+ * @param {string} title - Post title
+ * @param {string} content - Post content
+ * @returns {Forum} Returns the updated Froum
+ * @throws Bad PUT call - Forum not found
+ * @throws Bad PUT call - User not signed in
+ * @throws Bad PUT call - User does not exist
+ * @throws {Internal} Server error
+ */
 postRouter.put('/',async(
     req : Request<{},{},{fid : string, title : string, content : string}> &
     {
@@ -78,7 +99,16 @@ postRouter.put('/',async(
     }catch(e:any){res.status(500).send(e.message);}
 });
 
-/* Retrieve a post in a specific subforum */
+/** 
+ * Retrieve a post in a specific subforum
+ * @async
+ * @method GET /forum/:forumId/post/:pid
+ * @param {string} forumId - Forum id
+ * @param {number} pid - Post id
+ * @returns {IPost} Returns the fetched Post
+ * @throws Bad GET call - Post not found
+ * @throws {Internal} Server error
+ */
 postRouter.get("/:pid",async(
     req : Request<{forumId : string, pid : number},{},{}>,
     res : Response<IPost |String>
@@ -95,7 +125,17 @@ postRouter.get("/:pid",async(
     }
 });
 
-/* Comment on a specific post */
+/** 
+ * Comment on a specific post
+ * @async
+ * @method PUT /forum/:forumId/post/:pid/comment
+ * @param {string} forumId - Forum id
+ * @param {number} pid - Post id
+ * @param {string} content - Comment content
+ * @returns {IPost} Returns the updated post
+ * @throws Bad PUT call - User not logged in
+ * @throws {Internal} Server error
+ */
 postRouter.put("/:pid/comment", async(
     req : Request<{forumId : string, pid : number},{},{content : string}> & {
         session : {
@@ -125,7 +165,17 @@ postRouter.put("/:pid/comment", async(
     }
 })
 
-/* Upvotes / downvotes a comment on a post */
+/** 
+ * Upvotes / downvotes a comment on a post
+ * @async
+ * @method PUT /forum/:forumId/post/:pid/comment
+ * @param {string} forumId - Forum id
+ * @param {string} pid - Post id
+ * @param {string} comment - Comment id
+ * @throws Bad POST call - Bad input
+ * @throws Bad POST call - User not logged in
+ * @throws {Internal} Server error
+ */
 postRouter.post("/:pid/comment", async(
     req : Request<{forumId : string, pid : number},{},{comment : number, vote : boolean}> & {
         session : {

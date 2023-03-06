@@ -25,8 +25,8 @@ forumRouter.use(express.json());
  * Request to retrieve all subforums 
  * @async
  * @method GET /forum
- * @returns {Array.<Forum>} Returns the available forums
- * @throws {Internal} - Error retrieving forums
+ * @returns {Array.<IForum>} Returns the available forums
+ * @throws {Internal} Error retrieving forums
  */
 
 forumRouter.get('/', async(
@@ -50,7 +50,7 @@ forumRouter.get('/', async(
  * @throws Bad PUT call - User not logged in
  * @throws Bad PUT call - Bad input
  * @throws Bad PUT call - Forum title already exists
- * @throws {Interal} - Something went wrong
+ * @throws {Interal} Something went wrong
  */
 forumRouter.put('/', async(
     req: UserRequest,
@@ -88,7 +88,7 @@ forumRouter.put('/', async(
  * @returns {Forum} Returns the fetched forum
  * @throws Bad GET call - Missing id
  * @throws Bad GET call - Forum not found
- * @throws {Interal} - Something went wrong
+ * @throws {Interal} Something went wrong
  */
 forumRouter.get("/:id",async(
     req: Request<{ id: string }, {}, {}>,

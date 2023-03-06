@@ -1,12 +1,26 @@
 import { Account } from "./Account";
 
-/* Enumerator for upvote and downvotes */
+
+
+/**
+ * A tuple type consisting of a unique users ID and corresponding upvote / downvote
+ * @function Tuple
+ * @param {string} userId - Id of user
+ * @param {voteType} vote - Up-/downvote
+ */
+
+/**
+ * Enumerator for upvote and downvotes
+ * @enum {Boolean} voteType
+ * @property UP {number} - Upvote
+ * @property DOWN {number} - Downvote
+ */
+
 enum voteType {
     UP,
     DOWN
 }
 
-/* A tuple type consisting of a unique users ID and corresponding upvote / downvote */
 type Tuple = {
     username : string,
     vote : voteType
@@ -18,11 +32,27 @@ export interface IComment {
     rating  :   Number;
 }
 
+/**
+ * An IPost object has a unique ID, a title, content (post body), an author and a list of comments.
+ * @interface IComment IComment
+ * @property {string | Account} author - User who published the comment
+ * @property {string} content - The content
+ * @property {number} rating - The rating (upvotes & downvotes) from other users
+ */
+
+/**
+ * @implements {IComment}
+ * @param {string | Account} author - User who published the comment
+ * @param {string} content - The content
+ * @property {number} rating - The rating (upvotes & downvotes) from other users
+ * @property @type {Array.<Tuple>} ratees - List of ID's from users who has upvoted / downvoted. No 1 user can upvote/downvote more than once.
+ */
+
 export class Comment implements IComment {
     author  : Account|string; // User who published the comment
     content : string; // The message
     rating  : number; // The rating (upvotes & downvotes) from other users
-    ratees  : Tuple[]; // list of ID's from users who has upvoted / downvoted. No 1 user can upvote/downvote more than once.
+    ratees  : Tuple[]; // List of ID's from users who has upvoted / downvoted. No 1 user can upvote/downvote more than once.
 
     constructor(author : Account, content : string){
         this.author  = author;

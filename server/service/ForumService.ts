@@ -20,13 +20,18 @@ export interface IForumService{
     submitPost(f : string, p : Post) : Promise<false | Forum>;
 }
 
+/** @class */
 class ForumDBService implements IForumService{
 
     stripUsers(f : Forum){
 
     }
 
-    /* Retrieves all existing forums. */
+    /**
+     * Retrieves all existing forums.
+     * @async
+     * @returns {Promise<Array.<IForum>>} Returns an array of available Forums
+     */
     async getForums(): Promise<IForum[]> {
         const response = await forumModel.find().populate('author');
         const newForums = response.map(function(i){
@@ -35,7 +40,12 @@ class ForumDBService implements IForumService{
         return newForums;
     }
 
-    /* Search for a specific forum. Returns the forum if found, undefined otherwise. */
+    /**
+     * Search for a specific forum. Returns the forum if found, undefined otherwise.
+     * @async
+     * @param {string} input Forum id
+     * @returns {Promise<Forum | undefined>} Return sucessfully fetched Forum, otherwise undefined
+     */
     async findForum(input: string): Promise<Forum | undefined> {
         const result = await forumModel.findOne({title : input}).populate([{
             path : 'author',
@@ -52,7 +62,14 @@ class ForumDBService implements IForumService{
         return result;
     }
 
-    /* Creates a forum and returns the new forum if successful, undefined otherwise. */
+    /**
+     * Creates a forum and returns the new forum if successful, undefined otherwise.
+     * @async
+     * @param {string} title Forum title
+     * @param {string} description Forum description
+     * @param {string} author Forum author
+     * @returns {Promise<Forum | undefined>} Return sucessfully created Forum, otherwise undefined
+     */
     async createForum(title: string, description: string, author: string): Promise<Forum | undefined> {
         const lookup = await accountModel.findOne({username : author}); // Get user object
         if(lookup===null){
@@ -63,7 +80,13 @@ class ForumDBService implements IForumService{
         return response;
     }
 
-    /* Submits a post to a specific subforum, returns updated forum if successful - bool false otherwise.*/
+    /**
+     * Submits a post to a specific subforum, returns updated forum if successful - bool false otherwise.
+     * @async
+     * @param {string} forum Forum title
+     * @param {Post} post Post to submit
+     * @returns {Promise<Forum | false>} Return sucessfully updated Forum, otherwise false
+     */
     async submitPost(forum: string, p: Post): Promise<false | Forum> {
         const query = {title : forum};
         /* Finds the forum and pushes new post to list of posts */

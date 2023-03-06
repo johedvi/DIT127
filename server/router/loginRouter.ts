@@ -16,7 +16,16 @@ type SessionRequest = {
         }
 }
 
-/* Get session status. If logged in returns non-sensitive user information, else nothing. */  
+/** @module LoginRouter */
+
+
+/** 
+ * Get session status. If logged in returns non-sensitive user information, else nothing.
+ * @async
+ * @method GET /login
+ * @returns {Account | null} Returns the username of logged in user or nothing
+ * @throws {Internal} Server error
+ */
 loginRouter.get("/", async(
         req : Request<{},{},{}> & {
                 session : {
@@ -38,7 +47,18 @@ loginRouter.get("/", async(
         }
 });
 
-/* Log into an existing account */
+/** 
+ * Log into an existing account
+ * @async
+ * @method POST /login
+ * @param {string} username - Username
+ * @param {string} password - Password
+ * @returns {string} Assigned session ID
+ * @throws Bad POST call - Already logged in
+ * @throws Bad POST call - Bad input
+ * @throws Bad POST call - User does not exist
+ * @throws {Internal} Server error
+ */
 loginRouter.post("/", async(
         req : Request<{},{},{username : string, password : string}> & SessionRequest,
         res : Response
@@ -68,7 +88,17 @@ loginRouter.post("/", async(
         }
 });
 
-/* Create a new account */
+/** 
+ * Create a new account
+ * @async
+ * @method PUT /login
+ * @param {string} username - Username
+ * @param {string} password - Password
+ * @returns {string} Assigned session ID of newly created account
+ * @throws Bad POST call - Bad input
+ * @throws Bad POST call - Username already taken
+ * @throws {Internal} - Server error
+ */
 loginRouter.put("/", async (
         req : Request<{},{},{username : string, password : string}> & SessionRequest, 
         res : Response<Account | String>
@@ -94,7 +124,13 @@ loginRouter.put("/", async (
         }
 });
 
-/* Logout from the account / destroy the session */
+/** 
+ * Logout from the account / destroy the session
+ * @async
+ * @method GET /logout
+ * @returns {HTMLLinkElement} Redirect to previously visited page
+ * @throws {Internal} Server error
+ */
 loginRouter.get('/logout',async(req, res)=>{
         try{
             req.session.destroy(((err)=>{
