@@ -18,13 +18,15 @@ export interface IAccountService {
     getUserInfo(a : string) : Promise<undefined | Account>;
 }
 
+/** @class */
 class AccountDBService implements IAccountService {
     /**
      * Creates a new Account document in the database with the specified username and password.
      * Returns an Account object if successful, false otherwise.
-     * @param u The username of the account
-     * @param p The password for the account
-     * @returns Account if successful
+     * @async
+     * @param {string} u The username of the account
+     * @param {string} p The password for the account
+     * @returns {Promise<Account | false>} If creation successful, return Account
      */
     async createAccount(u: string, p: string): Promise<false | Account> {
         const newAccount = new Account(u);
@@ -35,17 +37,37 @@ class AccountDBService implements IAccountService {
         return newAccount;
     }
 
+    /**
+     * Checks if an username is taken.
+     * @async
+     * @param {string} u The username of the account
+     * @returns {Promise<boolean>} If account with username <u> exists, return true, else false
+     */
     async usernameTaken(u: string): Promise<boolean> {
         const response = accountModel.findOne({username : u});
         if(response===null){return false;} // Username doesn't exist
         return true;
     }
 
-    /* Checks if an account exists. Returns the account if true, null otherwise. */
+    /**
+     * Checks if an account exists
+     * @async
+     * @param {string} u The username of the account
+     * @param {string} p The password for the account
+     * @returns {Promise<Account | null>} Return the account if it exists, otherwise null
+     */
     async userLogin(u : String, p : String): Promise<null | Account> {
         return accountModel.findOne({username : u, password : p});
     }
 
+    /**
+     * Change password of a given account
+     * @async
+     * @param {string} a The username of the account
+     * @param {string} op The original password for the account
+     * @param {string} np The new password for the account
+     * @returns {Promise<boolean>} Returns true if account exists, otherwise null
+     */
     async changePassword(a: string, op: string, np: string): Promise<boolean> {
         const response = accountModel.findOneAndUpdate({username : a, password : op}, {password : np});
         if(response===null){return false;} // Account doesn't exist
@@ -55,7 +77,8 @@ class AccountDBService implements IAccountService {
     /**
      * Retrieves a user's non-sensitive information such as username, settings and preferences.
      * Returns undefined if not found.
-     * @param username The specified user's username to retrieve information from
+     * @async
+     * @param {string} username The specified user's username to retrieve information from
      * @returns The user information if found, undefined otherwise
      */
     async getUserInfo(username: string): Promise<Account | undefined> {

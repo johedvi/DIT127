@@ -1,9 +1,6 @@
 import { Comment } from "./Comment";
 import { Account } from "./Account";
 
-/**
- * An IPost object has a unique ID, a title, content (post body), an author and a list of comments.
- */
 export interface IPost {
     id      : Number;
     title   : String,
@@ -11,6 +8,25 @@ export interface IPost {
     author  : Account|String;
     comments: Comment[];
 }
+
+/**
+ * An IPost object has a unique ID, a title, content (post body), an author and a list of comments.
+ * @interface IPost IPost
+ * @property {number} id - Internal id
+ * @property {string} title - Title of the post
+ * @property {string} content - The body of the post - what the author has published
+ * @property {string | Account} author - The creator of the post. May be the account object itself or just the username
+ * @property {Array.<Comment>} comments - List of comments in the post.
+ */
+
+/**
+ * @implements {IPost}
+ * @param {string} title - Title of the post
+ * @param {string} content - The body of the post - what the author has published
+ * @param {string | Account} author - The creator of the post. May be the account object itself or just the username
+ * @param {number} id - Internal id
+ * @property {Array.<Comment>} comments - List of comments in the post.
+ */
 
 export class Post implements IPost{
     id       : Number;

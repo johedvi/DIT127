@@ -1,4 +1,4 @@
-import { makeAccountService } from "./accountService";
+import { makeAccountService } from "../service/accountService";
 import { accountModel } from "../db/account.db";
 const accountService = makeAccountService();
 
