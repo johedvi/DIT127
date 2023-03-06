@@ -18,8 +18,17 @@ type UserRequest = Request & {
 export const forumRouter = express.Router();
 
 forumRouter.use(express.json());
+/** @module ForumRouter */
 
-/* Request to retrieve all subforums */
+
+/** 
+ * Request to retrieve all subforums 
+ * @async
+ * @method GET /forum
+ * @returns {Array.<Forum>} Returns the available forums
+ * @throws {Internal} - Error retrieving forums
+ */
+
 forumRouter.get('/', async(
     req: Request,
     res: Response<Array<IForum> | string>
@@ -32,7 +41,17 @@ forumRouter.get('/', async(
     }
 });
 
-/* Request to create new forum */
+
+/** 
+ * Request to create new forum
+ * @async
+ * @method PUT /forum
+ * @returns {Forum} Returns the created forum
+ * @throws Bad PUT call - User not logged in
+ * @throws Bad PUT call - Bad input
+ * @throws Bad PUT call - Forum title already exists
+ * @throws {Interal} - Something went wrong
+ */
 forumRouter.put('/', async(
     req: UserRequest,
     res: Response<Forum | string>
@@ -61,7 +80,16 @@ forumRouter.put('/', async(
     }
 });
 
-/* Retrieve specific forum on /forum/ID */
+/** 
+ * Retrieve specific forum on /forum/ID
+ * @async
+ * @method GET /forum/:id
+ * @param {string} id - Title of the forum
+ * @returns {Forum} Returns the fetched forum
+ * @throws Bad GET call - Missing id
+ * @throws Bad GET call - Forum not found
+ * @throws {Interal} - Something went wrong
+ */
 forumRouter.get("/:id",async(
     req: Request<{ id: string }, {}, {}>,
     res: Response<Forum | string>
@@ -82,7 +110,17 @@ forumRouter.get("/:id",async(
     }
 });
 
-/* Delete forum if and only if authorized */
+/** 
+ * Delete forum if and only if authorized
+ * @async
+ * @method DELETE /forum/:id
+ * @param {string} id - Title of the forum
+ * @returns {void} Returns the fetched forum
+ * @throws Bad DELETE call - Unauthorised
+ * @throws Bad DELETE call - Missing id
+ * @throws Bad DELETE call - Forum does not exist
+ * @throws {Interal} - Something went wrong
+ */
 forumRouter.delete('/:id',async(
     req : Request<{ id : string}, {}, {}> & {
         session : {
