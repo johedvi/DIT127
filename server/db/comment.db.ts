@@ -17,11 +17,6 @@ const commentSchema : Schema = new Schema({
         required: true
     },
 
-    rating : {
-        type : Number,
-        required : true
-    },
-
     upvoters : [{
         type : Schema.Types.ObjectId,
         ref : 'Account',
@@ -37,5 +32,8 @@ const commentSchema : Schema = new Schema({
         dropDups : true,
         required : true
     }]
+})
+commentSchema.method('rating',function rating(){
+    return this.upvoters.length - this.downvoters.length;
 })
 export const commentModel = conn.model<Comment>("Comment", commentSchema);

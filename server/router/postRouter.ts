@@ -111,10 +111,9 @@ postRouter.put("/:pid/comment", async(
             return;
         }
         /* Create comment and add it to list of comments to this post */
-        const comment = {author : req.session.user.username , content : req.body.content, rating : 0};
+        const comment = {id : -1, author : req.session.user.username , content : req.body.content, rating : -1};
         const response = await postService.submitComment(req.params.pid,comment);
         /* If False, user does not exist OR failure to create comment / push to comments[] */
-        console.log(response);
         if(response===false){
             res.status(500).send(`Bad PUT to ${req.originalUrl} --- Authorization- or comment issue`);
             return;

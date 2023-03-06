@@ -13,18 +13,21 @@ type Tuple = {
 }
 
 export interface IComment {
+    id      : Number;
     author  :   String|Account;
     content :   String;
     rating  :   Number;
 }
 
 export class Comment implements IComment {
+    id      : Number;
     author  : Account|string; // User who published the comment
     content : string; // The message
     rating  : number; // The rating (upvotes & downvotes) from other users
     ratees  : Tuple[]; // list of ID's from users who has upvoted / downvoted. No 1 user can upvote/downvote more than once.
 
     constructor(author : Account, content : string){
+        this.id      = Date.now().valueOf();
         this.author  = author;
         this.content = content;
         this.rating  = 0;

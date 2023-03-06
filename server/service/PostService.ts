@@ -39,7 +39,7 @@ class PostDBService implements IPostService{
                 path : 'author',
                 transform : a => a = a.username
             },
-            transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating}
+            transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating()}
             
         }]);
         if(response===null){return undefined};
@@ -71,14 +71,11 @@ class PostDBService implements IPostService{
         const commentJSON = {
             id : getDate, 
             author : getAuthorId, 
-            content : commentData.content, 
-            rating : 1,
+            content : commentData.content,
             upvoters : [getAuthorId],
             downvoters : []
         };
-        console.log("Attempt create");
         const createComment = await commentModel.create(commentJSON);
-        console.log("Created comment");
         const updateQuery = {$push: {comments : createComment._id}};
         const addCommentToPost = await postModel.findOneAndUpdate({id : postId},updateQuery,{new:true}).populate([{
             path : 'author',
@@ -89,9 +86,8 @@ class PostDBService implements IPostService{
                 path : 'author',
                 transform : a => a = a.username
             },
-            transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating}
+            transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating()}
         }]);
-        console.log("Comment added to post");
         /* Check if post Update failed */
         if(addCommentToPost===null){
             return false;
@@ -109,18 +105,16 @@ class PostDBService implements IPostService{
      * @returns True if voting succeeds, False otherwise
      */
     async voteComment(commentId : number, ratee : string, updown : boolean): Promise<Boolean> {
-        const incrementBy = (updown) ? 1 : -1;
         const getUserId = await accountModel.findOne({username : ratee});
         if(getUserId===null){return false;} // User not found
         const queryBy = (updown) ? {upvoters : getUserId} : {downvoters : getUserId};
+        const antiQueryBy = (updown) ? {downvoters : {_id : getUserId}} : {upvoters : {_id : getUserId}};
         const updateQuery = {
-            $addToSet : queryBy
+            $addToSet : queryBy,
+            $pullAll : antiQueryBy
         };
-        const response = await commentModel.findOneAndUpdate({id : commentId},updateQuery,[],function(err,res){
-            if(err){
-                return;
-            }
-        })
+        const response = await commentModel.findOneAndUpdate({id : commentId},updateQuery,{new : true})
+        console.log(response);
         if(response===null){return false;}
         return true;
     }
