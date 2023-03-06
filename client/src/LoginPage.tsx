@@ -102,12 +102,12 @@ export default function (props: {}) {
               alert(`Please fix the errors before submitting.`);
               return;
             }
-            const response = await axios.post("http://localhost:8080/login",
+            await axios.post("http://localhost:8080/login",
               {
                 username: userName,
                 password: passWord
               })
-            navigate("/forum");
+            navigate(-1); // Returns to previous page
           }
           catch (e: any) {
             switch (e.response.status) {
@@ -191,7 +191,7 @@ export default function (props: {}) {
         <form className="Auth-form" onSubmit={async e => {
           try {
             e.preventDefault();
-            const response: Response = await axios.put("http://localhost:8080/login",
+            await axios.post("http://localhost:8080/login",
               {
                 username: userName,
                 password: passWord

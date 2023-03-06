@@ -39,8 +39,8 @@ function App() {
     async function getPost() {
         const getPost = (postId == null) ? "" : postId;
         const getForum = (forumId == null) ? "" : forumId;
-
         const response = await axios.get("http://localhost:8080/forum/" + getForum + "/post/" + getPost);
+        console.log(response.data);
         setPosts(response.data);
     }
 
@@ -72,6 +72,7 @@ function App() {
                     await axios.put("http://localhost:8080/forum/" + forumId + "/post/" + postId + "/comment", { content: commentBody });
                     getPost();
                 } catch (e: any) {
+                    console.log(e);
                     switch(e.response.status){
                         case 401 : alert("Please sign in before commenting"); break;
                         default : alert("Unexpected error when commenting"); break;

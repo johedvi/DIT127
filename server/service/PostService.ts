@@ -19,7 +19,7 @@ export interface IPostService {
 
     // Upvotes the comment on index n inside the post and returns true.
     // Returns false if no comment with index n.
-    voteComment(cid : number, ratee : string, type : number) : Promise<Boolean>;
+    voteComment(cid : number, ratee : string, type : boolean) : Promise<Boolean>;
 }
 
 class PostDBService implements IPostService{
@@ -59,6 +59,7 @@ class PostDBService implements IPostService{
      * @returns Updated IPost object if successful. False otherwise.
      */
     async submitComment(postId : number, commentData : IComment): Promise<IPost | false> {
+        console.log("Entered submit");
         const getAuthorId = await accountModel.findOne({username : commentData.author},'_id');
         /* Checks if the user exists */
         if(getAuthorId === null){
@@ -67,8 +68,17 @@ class PostDBService implements IPostService{
         /* Create comment and add to post's list of comments, returning the populated fields
             without sensitive information. */
         const getDate = Date.now().valueOf();
-        const commentJSON = {id : getDate, author : getAuthorId, content : commentData.content, rating : 1, ratees : [getAuthorId]};
+        const commentJSON = {
+            id : getDate, 
+            author : getAuthorId, 
+            content : commentData.content, 
+            rating : 1,
+            upvoters : [getAuthorId],
+            downvoters : []
+        };
+        console.log("Attempt create");
         const createComment = await commentModel.create(commentJSON);
+        console.log("Created comment");
         const updateQuery = {$push: {comments : createComment._id}};
         const addCommentToPost = await postModel.findOneAndUpdate({id : postId},updateQuery,{new:true}).populate([{
             path : 'author',
@@ -81,6 +91,7 @@ class PostDBService implements IPostService{
             },
             transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating}
         }]);
+        console.log("Comment added to post");
         /* Check if post Update failed */
         if(addCommentToPost===null){
             return false;
@@ -88,12 +99,28 @@ class PostDBService implements IPostService{
         return addCommentToPost;
     }
 
-    /* Upvotes a comment, returns true if successful false otherwise*/
-    async voteComment(commentId : number, ratee : string, updown : number): Promise<Boolean> {
+    /**
+     * Upvotes or Downvotes a comment. One user can only upvote once or downvote once. If the user previously
+     * upvoted and upvotes again then their vote is removed. If they previously upvoted and then downvotes then
+     * it converts to a downvote (total difference of 2). Same applies if the user previously downvoted.
+     * @param commentId The ID of the comment the user is voting on
+     * @param ratee The user who is voting
+     * @param updown True is for Upvote, False is for Downvote
+     * @returns True if voting succeeds, False otherwise
+     */
+    async voteComment(commentId : number, ratee : string, updown : boolean): Promise<Boolean> {
+        const incrementBy = (updown) ? 1 : -1;
         const getUserId = await accountModel.findOne({username : ratee});
         if(getUserId===null){return false;} // User not found
-        const response = await commentModel.findOneAndUpdate({id : commentId},{$push : {ratees : getUserId}, $inc: {rating : updown}})
-        console.log(response);
+        const queryBy = (updown) ? {upvoters : getUserId} : {downvoters : getUserId};
+        const updateQuery = {
+            $addToSet : queryBy
+        };
+        const response = await commentModel.findOneAndUpdate({id : commentId},updateQuery,[],function(err,res){
+            if(err){
+                return;
+            }
+        })
         if(response===null){return false;}
         return true;
     }

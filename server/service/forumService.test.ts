@@ -2,7 +2,9 @@ import { Forum } from "../model/Forum";
 import { Post } from "../model/Post";
 import { Comment } from "../model/Comment";
 import { makeForumService } from "./forumService";
+import { makeAccountService } from "./accountService";
 const forumService = makeForumService();
+const accountService = makeAccountService();
 
 test("If a forum is created then it is added to the list of all available forums",
 async()=>{
@@ -19,7 +21,7 @@ async()=>{
     const t = "My recipe";
     const c = "Mix rum and coke!";
     const a = "John Bull";
-    const post = new Post(t,c,a);
+    const post = new IPost(t,c,a);
     await forumService.submitPost("Cooking",post);
     const forum = await forumService.findForum("Cooking");
     if(forum === undefined){ /* Should be able to retrieve forum */

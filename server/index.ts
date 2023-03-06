@@ -1,6 +1,8 @@
 import express from "express";
-import { forumRouter } from "./router/ForumRouter";
+import { forumRouter } from "./router/forumRouter";
 import { postRouter } from "./router/postRouter";
+import { loginRouter } from "./router/loginRouter";
+import { settingsRouter } from "./router/settingsRouter";
 import { userRouter } from "./router/userRouter";
 import session from "express-session";
 import cors from "cors";
@@ -19,6 +21,8 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use("/forum",forumRouter); // Handle all /forum requests
-app.use("/login",userRouter);
 app.use("/forum/:forumId/post", postRouter); // Handle post / comment requests
+app.use("/login",loginRouter);
+app.use("/settings",settingsRouter);
+app.use("/user",userRouter);
 app.listen(8080);

@@ -114,6 +114,7 @@ postRouter.put("/:pid/comment", async(
         const comment = {author : req.session.user.username , content : req.body.content, rating : 0};
         const response = await postService.submitComment(req.params.pid,comment);
         /* If False, user does not exist OR failure to create comment / push to comments[] */
+        console.log(response);
         if(response===false){
             res.status(500).send(`Bad PUT to ${req.originalUrl} --- Authorization- or comment issue`);
             return;
@@ -135,16 +136,17 @@ postRouter.post("/:pid/comment", async(
     )=>{
         const comment = req.body.comment;
         const vote = req.body.vote;
+        /* Type checking requests input */
         if(typeof(comment)!=='number'||typeof(vote)!=='boolean'){
             res.status(400).send(`Expected comment id of type number, vote of type boolean, got ${typeof(comment)} and ${typeof(vote)}`);
             return;
         }
+        /* Check if user is signed in / has a session */
         if(req.session.user===undefined){
-            res.status(401).send(`User must be logged in`);
+            res.status(401).send(`User must be logged in to vote`);
             return;
         }
-        const voteType = (vote===true) ? 1 : -1;
-        const result = postService.voteComment(comment,req.session.user.username,voteType);
+        const result = postService.voteComment(comment,req.session.user.username,vote);
         if(!result){
             res.status(500).send(`Comment voting error`);
             return;
