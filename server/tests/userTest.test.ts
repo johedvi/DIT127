@@ -1,10 +1,5 @@
-
-import mongoose from "mongoose";
-import { exit } from "process";
-import { Account } from "./model/Account";
-import { Forum } from "./model/Forum";
-import { makeAccountService } from "./service/accountService";
-import { makeForumService } from "./service/forumService";
+import { makeAccountService } from "../service/accountService";
+import { makeForumService } from "../service/forumService";
 require('./db/post.db');
 const forumService = makeForumService();
 const accountService = makeAccountService();
