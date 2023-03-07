@@ -50,7 +50,15 @@ li a {
   margin: 12px 0;
 }
 
-.rating {
+.delete {
   max-width: 20%;
   float: right;
 }
+
+
+.rating {
+  max-width: 20%;
+ 
+  float: right;
+}
+

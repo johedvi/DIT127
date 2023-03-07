@@ -50,7 +50,9 @@ function App() {
 
     function DisplayComment(comment: IComment) {
         return <li className="comment"><a href={"/profile/"+comment.author}>{"posted by " + comment.author}</a> 
-        <p className="rating"><a href="#" onClick={e=>upVote(comment.id,true)}>{String.fromCharCode(8593)}</a>{" Rating: " + comment.rating + " "}<a href="#" onClick={e=>upVote(comment.id,false)}>{String.fromCharCode(8595)}</a></p>
+         <p className="delete"><a href="#" onClick = {e=>upVote(comment.id,true)}>{String.fromCharCode(10006)}</a></p>
+        <p className="rating"><a href="#" onClick={e=>upVote(comment.id,true)}>{String.fromCharCode(8593)}</a>
+        {" Rating: " + comment.rating + " "}<a href="#" onClick={e=>upVote(comment.id,false)}>{String.fromCharCode(8595)}</a></p>
         <p>{comment.content}</p>
         </li>
     }
