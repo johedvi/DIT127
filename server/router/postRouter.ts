@@ -6,8 +6,8 @@ import { Forum } from "../model/Forum";
 import { postModel } from "../db/post.db";
 import { forumModel } from "../db/forum.db";
 import { accountModel } from "../db/account.db";
-import { makePostService } from "../service/postService";
-import { makeForumService } from "../service/forumService";
+import { makePostService } from "../service/PostService";
+import { makeForumService } from "../service/ForumService";
 const postService = makePostService();
 const forumService = makeForumService();
 
@@ -203,3 +203,33 @@ postRouter.post("/:pid/comment", async(
         res.status(200).send(`Voting successful`);
     }
 )
+
+
+ //TODO
+
+postRouter.delete("/:pid/comment", async(
+    req : Request<{forumId : string, pid : number},{},{comment : number, vote : boolean}> & {
+        session : {
+            user? : Account
+        }
+    },
+    res : Response<Boolean|String>
+    )=>{
+        const comment = req.body.comment;
+        const vote = req.body.vote;
+        /* Type checking requests input */
+        if(typeof(comment)!=='number'||typeof(vote)!=='boolean'){
+            res.status(400).send(`Expected comment id of type number, vote of type boolean, got ${typeof(comment)} and ${typeof(vote)}`);
+            return;
+        }
+        /* Check if user is signed in / has a session */
+        if(req.session.user===undefined){
+            res.status(401).send(`User must be logged in to vote`);
+            return;
+        }
+  
+
+    }
+)
+
+

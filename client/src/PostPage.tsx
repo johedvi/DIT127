@@ -35,6 +35,17 @@ function App() {
         alert("Something went wrong. Please try again");
     }
 
+    async function deleteComment(commentId : number) {
+        const response = await axios.delete('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment',{data:
+           commentId,
+        })
+        if(response.status===200){
+            getPost();
+            return;
+        }
+        alert("Something went wrong. Please try again");
+    }
+
     /* Fetches new/updated Post object */
     async function getPost() {
         const getPost = (postId == null) ? "" : postId;
@@ -50,7 +61,9 @@ function App() {
 
     function DisplayComment(comment: IComment) {
         return <li className="comment"><a href={"/profile/"+comment.author}>{"posted by " + comment.author}</a> 
-        <p className="rating"><a href="#" onClick={e=>upVote(comment.id,true)}>{String.fromCharCode(8593)}</a>{" Rating: " + comment.rating + " "}<a href="#" onClick={e=>upVote(comment.id,false)}>{String.fromCharCode(8595)}</a></p>
+         <p className="delete"><a href="#" onClick = {e=>upVote(comment.id,true)}>{String.fromCharCode(10006)}</a></p>
+        <p className="rating"><a href="#" onClick={e=>deleteComment(comment.id)}>{String.fromCharCode(8593)}</a>
+        {" Rating: " + comment.rating + " "}<a href="#" onClick={e=>upVote(comment.id,false)}>{String.fromCharCode(8595)}</a></p>
         <p>{comment.content}</p>
         </li>
     }

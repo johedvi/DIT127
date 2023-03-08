@@ -124,6 +124,19 @@ class PostDBService implements IPostService{
         if(response===null){return false;}
         return true;
     }
+
+
+     //TODO:
+    async deleteComment(commentId : number, commentor : string): Promise<Boolean> {
+        const getUserId = await accountModel.findOne({username : commentor});
+        if(getUserId===null){return false;} // User not found
+       
+       
+        const response = await commentModel.findOneAndUpdate({id : commentId},{new : true})
+        console.log(response);
+        if(response===null){return false;}
+        return true;
+    }
 }
 
 export function makePostService() : IPostService{
