@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
 
 export default function (props: {}) {
+
   const navigate = useNavigate();
   enum pageType {
     signin,
@@ -98,9 +99,10 @@ export default function (props: {}) {
         <form className="Auth-form" onSubmit={async e => {
           e.preventDefault();
           try {
-            var bcrypt = require('bcryptjs');
-            var salt = userName;
-            var hashedPassWord = bcrypt.hashSync(passWord, salt)
+            //var bcrypt = require('bcryptjs');
+            //var salt = userName;
+            //var hashedPassWord = bcrypt.hashSync(passWord, salt)
+
             /* Attempt to login - fails if username does not exist or password is incorrect */
             if (nameError !== "" || passError !== "") {
               alert(`Please fix the errors before submitting.`);
@@ -109,7 +111,7 @@ export default function (props: {}) {
             await axios.post("http://localhost:8080/login",
               {
                 username: userName,
-                password: hashedPassWord
+                password: passWord
               })
             navigate(-1); // Returns to previous page
           }
@@ -195,13 +197,13 @@ export default function (props: {}) {
         <form className="Auth-form" onSubmit={async e => {
           try {
             e.preventDefault();
-            var bcrypt = require('bcryptjs');
-            var salt = userName;
-            var hashedPassWord = bcrypt.hashSync(passWord, salt)
+            //var bcrypt = require('bcryptjs');
+            //var salt = userName;
+            //var hashedPassWord = bcrypt.hashSync(passWord, salt)
             await axios.put("http://localhost:8080/login",
               {
                 username: userName,
-                password: hashedPassWord
+                password: passWord
               })
             navigate("/forum");
           } catch (e: any) {
