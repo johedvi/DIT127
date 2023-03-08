@@ -108,11 +108,9 @@ class PostDBService implements IPostService{
         const queryBy = (updown) ? {upvoters : getUserId} : {downvoters : getUserId};
         const antiQueryBy = (updown) ? {downvoters : {_id : getUserId}} : {upvoters : {_id : getUserId}};
         const updateQuery = {
-            $addToSet : queryBy,
-            $pullAll : antiQueryBy
+            $addToSet : queryBy
         };
         const response = await commentModel.findOneAndUpdate({id : commentId},updateQuery,{new : true})
-        console.log(response);
         if(response===null){return false;}
         return true;
     }

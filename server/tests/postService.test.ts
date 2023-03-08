@@ -13,6 +13,7 @@ const postService = makePostService();
 const forumService = makeForumService();
 
 const user = new Account('PostServiceUser','PostServicePassword');
+const sndUser = new Account('PostServiceRatee','PostServiceRateePass');
 const forumJson = {title : 'Post Service Forum Test', content : 'Post Service Forum Description'};
 const postId = Date.now().valueOf();
 const postJson = {id : postId, title : 'Post Service Post Test', content : 'Post Service Post Content'};
@@ -22,6 +23,7 @@ const commentJson = new Comment(user,"Post Service Test Comment");
 beforeAll(async()=>{
     await postModel.findOneAndDelete({id : postId});
     await accountModel.findOneAndDelete({username : user.username});
+    await accountModel.findOneAndDelete({username : sndUser.username});
     await forumModel.findOneAndDelete({title : forumJson.title});
     
     const userObject = await accountModel.create(user);
@@ -65,5 +67,23 @@ test("Post Service - Comment can be created on a post",async()=>{
     expect(response.comments.map((comment : Comment)=>comment.author)).toContain(findUser.username);
     expect(response.comments.map((comment : Comment)=>comment.content)).toContain(commentJson.content);
     const getCommentId = response.comments[0].id;
-    await commentModel.findOneAndDelete({id : getCommentId});
+})
+
+test("Post Service - User can vote on a comment",async()=>{
+    const getUser = await accountModel.findOne({username : user.username});
+    const getComment = await commentModel.findOne({author : getUser?._id});
+    if(getUser===null){fail('Post Service - Failed to retrieve user')};
+    if(getComment===null){fail('Post Service - Failed to retrieve comment')};
+
+    // A different user should be able to upvote and be added to list of upvoters
+    // The creator is added automatically on comment creation, should be indempotent
+    const newUser = await accountModel.create(sndUser);
+    const response = await postService.voteComment(getComment.id,getUser.username,true);
+    const sndResponse = await postService.voteComment(getComment.id,newUser.username,true);
+
+    const getUpdComment : Comment|null = await commentModel.findOne({id : getComment.id});
+    if(getUpdComment===null){fail('Post Service - Failed to retrieve updated comment object')};
+    // If equal then earlier author-upvote never succeeded - meaning its indempotent! (Which is good)
+    expect(getUpdComment.upvoters).toEqual([getUser._id,newUser._id]);
+    await commentModel.findOneAndDelete({id : getComment.id});
 })
