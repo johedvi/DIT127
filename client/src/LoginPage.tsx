@@ -198,7 +198,7 @@ export default function (props: {}) {
             var bcrypt = require('bcryptjs');
             var salt = userName;
             var hashedPassWord = bcrypt.hashSync(passWord, salt)
-            await axios.post("http://localhost:8080/login",
+            await axios.put("http://localhost:8080/login",
               {
                 username: userName,
                 password: hashedPassWord
