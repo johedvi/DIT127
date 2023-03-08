@@ -191,7 +191,7 @@ export default function (props: {}) {
         <form className="Auth-form" onSubmit={async e => {
           try {
             e.preventDefault();
-            await axios.post("http://localhost:8080/login",
+            await axios.put("http://localhost:8080/login",
               {
                 username: userName,
                 password: passWord
