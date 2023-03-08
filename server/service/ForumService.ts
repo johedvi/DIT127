@@ -93,7 +93,8 @@ class ForumDBService implements IForumService{
     }
 
     /**
-     * Submits a post to a specific subforum, returns updated forum if successful - bool false otherwise.
+     * Creates a post with Post Model and pushes it to the list of posts of the specified forum.
+     * Returns updated Forum if successful - bool false otherwise.
      * @async
      * @param {string} forum Forum title
      * @param {Post} post Post to submit

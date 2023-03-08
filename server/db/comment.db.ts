@@ -3,7 +3,11 @@ import { conn } from "./conn";
 
 const commentSchema : Schema = new Schema({
 
-    id : Number,
+    id : {
+        type : Number,
+        unique : true
+    },
+    
     author : {
         type : Schema.Types.ObjectId,
         ref: 'Account',
@@ -18,7 +22,6 @@ const commentSchema : Schema = new Schema({
     upvoters : [{
         type : Schema.Types.ObjectId,
         ref : 'Account',
-        unique : true,
         dropDups : true,
         required : true
     }],
@@ -26,7 +29,6 @@ const commentSchema : Schema = new Schema({
     downvoters : [{
         type : Schema.Types.ObjectId,
         ref  : 'Account',
-        unique : true,
         dropDups : true,
         required : true
     }]

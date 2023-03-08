@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import bcrypt from "bcryptjs";
 
 export default function (props: {}) {
   const navigate = useNavigate();
@@ -97,6 +98,9 @@ export default function (props: {}) {
         <form className="Auth-form" onSubmit={async e => {
           e.preventDefault();
           try {
+            var bcrypt = require('bcryptjs');
+            var salt = userName;
+            var hashedPassWord = bcrypt.hashSync(passWord, salt)
             /* Attempt to login - fails if username does not exist or password is incorrect */
             if (nameError !== "" || passError !== "") {
               alert(`Please fix the errors before submitting.`);
@@ -105,7 +109,7 @@ export default function (props: {}) {
             await axios.post("http://localhost:8080/login",
               {
                 username: userName,
-                password: passWord
+                password: hashedPassWord
               })
             navigate(-1); // Returns to previous page
           }
@@ -191,10 +195,13 @@ export default function (props: {}) {
         <form className="Auth-form" onSubmit={async e => {
           try {
             e.preventDefault();
-            await axios.put("http://localhost:8080/login",
+            var bcrypt = require('bcryptjs');
+            var salt = userName;
+            var hashedPassWord = bcrypt.hashSync(passWord, salt)
+            await axios.post("http://localhost:8080/login",
               {
                 username: userName,
-                password: passWord
+                password: hashedPassWord
               })
             navigate("/forum");
           } catch (e: any) {

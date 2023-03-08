@@ -6,8 +6,8 @@ import { Forum } from "../model/Forum";
 import { postModel } from "../db/post.db";
 import { forumModel } from "../db/forum.db";
 import { accountModel } from "../db/account.db";
-import { makePostService } from "../service/PostService";
-import { makeForumService } from "../service/ForumService";
+import { makePostService } from "../service/postService";
+import { makeForumService } from "../service/forumService";
 const postService = makePostService();
 const forumService = makeForumService();
 
@@ -151,8 +151,7 @@ postRouter.put("/:pid/comment", async(
             return;
         }
         /* Create comment and add it to list of comments to this post */
-        const comment = {id : -1, author : req.session.user.username , content : req.body.content, rating : -1};
-        const response = await postService.submitComment(req.params.pid,comment);
+        const response = await postService.submitComment(req.params.pid,req.session.user,req.body.content);
         /* If False, user does not exist OR failure to create comment / push to comments[] */
         if(response===false){
             res.status(500).send(`Bad PUT to ${req.originalUrl} --- Authorization- or comment issue`);
