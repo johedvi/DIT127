@@ -1,18 +1,18 @@
-import { Account } from "../model/Account";
+import { IAccount, Account } from "../model/Account";
 import { accountModel } from "../db/account.db";
 export interface IAccountService {
     /* Create an account with a unique username */
-    createAccount(u : string, p : string) : Promise<false | Account>;
+    createAccount(u : string, p : string) : Promise<false | IAccount>;
 
     /* Check if a user exists */
-    userLogin(u : string, p : string) : Promise<null | Account>;
+    userLogin(u : string, p : string) : Promise<null | IAccount>;
 
     // Change a users account password. True if successful.
     // False if new password don't meet requirements.
     changePassword(a : string, op : string, np : string) : Promise<boolean>;
 
     // Returns the users non-sensitive information, undefined otherwise
-    getUserInfo(a : string) : Promise<undefined | Account>;
+    getUserInfo(a : string) : Promise<undefined | IAccount>;
 }
 
 /** @class */
@@ -25,9 +25,9 @@ class AccountDBService implements IAccountService {
      * @param {string} p The password for the account
      * @returns {Promise<Account | false>} If creation successful, return Account
      */
-    async createAccount(u: string, p: string): Promise<false | Account> {
-        const newAccount = new Account(u);
-        const response = await accountModel.create({username : u, password : p})
+    async createAccount(u: string, p: string): Promise<false | IAccount> {
+        const newAccount = new Account(u,p);
+        const response = (await accountModel.create(newAccount)).username
         if(response===null){ // Account already exists
             return false;
         }
@@ -40,10 +40,11 @@ class AccountDBService implements IAccountService {
      * @async
      * @param {string} u The username of the account
      * @param {string} p The password for the account
-     * @returns {Promise<Account | null>} Return the account if it exists, otherwise null
+     * @returns {Promise<IAccount | null>} Return the account if it exists, otherwise null
      */
-    async userLogin(u : String, p : String): Promise<null | Account> {
-        return accountModel.findOne({username : u, password : p});
+    async userLogin(u : String, p : String): Promise<null | IAccount> {
+        const reply = await accountModel.findOne({username : u, password : p},'username');
+        return reply;
     }
 
     /**
@@ -55,7 +56,7 @@ class AccountDBService implements IAccountService {
      * @returns {Promise<boolean>} Returns true if account exists, otherwise null
      */
     async changePassword(a: string, op: string, np: string): Promise<boolean> {
-        const response = accountModel.findOneAndUpdate({username : a, password : op}, {password : np});
+        const response = await accountModel.findOneAndUpdate({username : a, password : op},{password: np},{new : true});
         if(response===null){return false;} // Account doesn't exist
         return true;
     }

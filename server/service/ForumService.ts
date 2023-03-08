@@ -1,7 +1,8 @@
 import { Forum, IForum } from "../model/Forum";
 import { Post } from "../model/Post";
-import { forumModel } from "../db/forum.db"
 import { Account } from "../model/Account";
+import { forumModel } from "../db/forum.db"
+import { postModel } from "../db/post.db";
 import { accountModel } from "../db/account.db";
 
 /* Populate() */
@@ -56,8 +57,11 @@ class ForumDBService implements IForumService{
             transform : u => u = u.username
         },{
             path : 'posts',
-            populate : 'author',
-            transform : p => p = {id : p.id, title : p.title, author : p.author.username, comments : p.comments.length}
+            populate : {
+                path : 'author',
+                transform : a => a = a.username
+            },
+            transform : p => p = {id : p.id, title : p.title, author : p.author, comments : p.comments.length}
         }]);
         if(result===null){return undefined}
         return result;
@@ -76,9 +80,15 @@ class ForumDBService implements IForumService{
         if(lookupUser===null){
             return undefined;
         }
-        const newForum = new Forum(title,description,lookupUser._id)
-        const response = await forumModel.create(newForum);
-        console.log(response);
+        const newForum = new Forum(title,description,lookupUser);
+        const response = await (await forumModel.create(newForum)).populate([{
+            path: 'author', 
+            transform : a=>a=a.username
+        },{
+            path : 'users',
+            transform : u=>u=u.username
+        }]
+        );
         return response;
     }
 
@@ -92,15 +102,24 @@ class ForumDBService implements IForumService{
     async submitPost(forum: string, p: Post): Promise<false | Forum> {
         const query = {title : forum};
         /* Finds the forum and pushes new post to list of posts */
-        const result = await forumModel.updateOne(query,{ $push: {posts : p}});
-        if(result.acknowledged){ // Successfully added, now fetch updated forum object
-            const getUpdatedForum = await forumModel.findOne(query);
-            if(getUpdatedForum===null){ // Between push and fetch something has happened, return false
-                return false
+        const createPost = await postModel.create(p);
+        const result = await forumModel.findOneAndUpdate(query,{ $push: {posts : createPost}},{new : true}).populate([{
+            path : 'author',
+            transform : a=>a=a.username
+        },{
+            path : 'users',
+            transform : u=>u=u.username
+        },{
+            path : 'posts',
+            populate : {
+                path : 'author',
+                transform : a=>a=a.username
             }
-            return getUpdatedForum;
-        } // Push failed, return false
-        return false;
+        }]);
+        if(result===null){
+            return false;
+        }
+        return result;
     }
 }
 export function makeForumService() : IForumService{

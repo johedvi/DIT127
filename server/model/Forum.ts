@@ -1,11 +1,12 @@
 import { Post } from "./Post"; 
 import { Account } from "./Account";
+import { ObjectId } from "mongodb";
 
 
 export interface IForum {
     title       : string; // The unqiue ID of the forum - It's title
     description : string; // A short description about this subforum
-    author : string | Account;
+    author : Account|string;
 }
 
 

@@ -1,66 +1,28 @@
-import { Forum } from "../model/Forum";
-import { Post } from "../model/Post";
-import { Comment } from "../model/Comment";
+import { Forum, IForum } from "../model/Forum";
 import { makeForumService } from "../service/forumService";
-import { makeAccountService } from "../service/accountService";
+// Instantiate the models to avoid 'MissingSchemaError' during testing
+require("../db/post.db");
+require("../db/comment.db");
 import { conn } from "../db/conn";
+import { Post } from "../model/Post";
+import { accountModel } from "../db/account.db";
+import { forumModel } from "../db/forum.db";
+import { postModel } from "../db/post.db";
 const forumService = makeForumService();
-/*
-test("If a forum is created then it is added to the list of all available forums",
-async()=>{
-    const title = "Cooking";
-    const description = "For all of us who love to cook!";
-    const owner = "John Bull";
-    await forumService.createForum(title,description,owner);
-    const forums = await forumService.getForums();
-    expect(forums.some((task=>task.title==title))).toBeTruthy();
-})
 
-test("If a post is added to a forum then it is added to that forums' list of posts.",
-async()=>{
-    const t = "My recipe";
-    const c = "Mix rum and coke!";
-    const a = "John Bull";
-    const post = new IPost(t,c,a);
-    await forumService.submitPost("Cooking",post);
-    const forum = await forumService.findForum("Cooking");
-    if(forum === undefined){ // Should be able to retrieve forum 
-        expect(forum).toBe(!undefined); // Should exist, if not return as failure!
-    }
-    else{
-        expect(forum.posts.some((p=>post.title==t))).toBeTruthy();
-    }
-})
-
-test("If a comment is made on a post then it will be added to that specific posts' list of comments.",
-async()=>{
-    const author = "John Bull";
-    const content = "Tastes awful";
-    const comment = new Comment(author,content);
-    const forums = await forumService.getForums();
-    const forumSpecific = forums.find((f)=>f.title==="Cooking");
-    const postSpecific = forumSpecific?.posts.find((p)=>p.title=="My recipe");
-    const result = postSpecific?.addComment(comment);
-    const findComment = postSpecific?.comments.find((t)=>t.author==author&&t.content==content);
-    if(!result){
-        expect(findComment).toBe(!undefined); // Comment should exist, we want this to return as a failure!
-    }
-    else{
-        expect(findComment).toBe(comment);
-    }
-})
-*/
 const user = {username : 'ForumServiceUser', password : 'ForumServicePass'};
 const forum = {title : 'ForumService', description : 'Forum Service test'};
+const postId = Date.now().valueOf();
 
+// Teardown & setup database before testing
 beforeAll(async()=>{
-    conn.useDb('test');
-    await conn.model('Account').findOneAndDelete({username : user.username});
-    await conn.model('Forum').findOneAndDelete({title : forum.title});
-
-    await conn.model('Account').create(user);
+    await accountModel.findOneAndDelete({username : user.username});
+    await forumModel.findOneAndDelete({title : forum.title});
+    await postModel.findOneAndDelete({id : postId});
+    await accountModel.create(user);
 })
 
+// Create a forum and ensure valid response and matching title, description and creator (author)
 test("Forum Service - Forum Creation test",async()=>{
     const response = await forumService.createForum(forum.title,forum.description,user.username);
     expect(response!==undefined);
@@ -71,3 +33,39 @@ test("Forum Service - Forum Creation test",async()=>{
     expect(response.author).toEqual(user.username);
 });
 
+// Ensure that the created forum can be retrieved and exists in the list of forums
+test("Forum Service - Retrieve list of existing forums",async()=>{
+    const response = await forumService.getForums();
+    expect(response!==undefined);
+    if(response===undefined){fail('Forum Service - Failed to retrieve existing forums')};
+
+    expect(response.map((forum : IForum)=>forum.title)).toContain(forum.title);
+    expect(response.map((forum : IForum)=>forum.description)).toContain(forum.description);
+    expect(response.map((forum : IForum)=>forum.author)).toContain(user.username);
+});
+
+// Ensure that the created forum can be found and retrieved in specific
+test("Forum Service - Find a specific forum",async()=>{
+    const response = await forumService.findForum(forum.title);
+    expect(response!==undefined)
+    if(response===undefined){fail('Forum Service - Failed to find existing forum')};
+
+    expect(response.title).toEqual(forum.title);
+    expect(response.description).toEqual(forum.description);
+    expect(response.users).toContain(user.username);
+    expect(response.author).toEqual(user.username);
+});
+
+test("Forum Service - Submit a post to a forum",async()=>{
+    const getUser = await accountModel.findOne({username : user.username})
+    if(getUser===null){fail('Forum Service - Failed to submit due to user not existing')};
+    const post = new Post(postId,'Forum Service Post Title','Forum Service Post Content',getUser);
+    const response = await forumService.submitPost(forum.title,post);
+    expect(response!==false);
+    if(response===false){fail('Forum Service - Failed to submit post to forum')};
+
+    expect(response.posts.map((post : Post)=>post.title)).toContain(post.title);
+    expect(response.posts.map((post : Post)=>post.content)).toContain(post.content);
+    expect(response.posts.map((post : Post)=>post.author)).toContain(user.username);
+    expect(response.posts.map((post : Post)=>post.id)).toContain(post.id);
+})

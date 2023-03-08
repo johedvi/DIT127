@@ -35,7 +35,7 @@ export class Post implements IPost{
     author   : Account; // Author
     comments : Array<Comment>; // A list of comments made by users to this specific post
 
-    constructor(title : string, content : string,author : Account, id : number){
+    constructor(id : number, title : string, content : string,author : Account){
         this.id       = id;
         this.title    = title;
         this.content  = content;

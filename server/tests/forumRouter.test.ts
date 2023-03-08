@@ -2,6 +2,8 @@ import { Forum } from "../model/Forum";
 import * as SuperTest from "supertest";
 import { app } from "../index";
 import { conn } from "../db/conn";
+import { accountModel } from "../db/account.db";
+import { forumModel } from "../db/forum.db";
 
 const request = SuperTest.default(app);
 /* Some global values to use in our tests in this suite */
@@ -12,8 +14,8 @@ const forum = {title : 'ForumTest', description : 'Forum Router test description
 used in THIS suite as to not ruin other tests */
 beforeAll(async()=>{
     conn.useDb('test');
-    await conn.model('Account').findOneAndDelete({username : user.username});
-    await conn.model('Forum').findOneAndDelete({title : forum.title});
+    await accountModel.findOneAndDelete({username : user.username});
+    await forumModel.findOneAndDelete({title : forum.title});
 })
 
 test("Forum Router - Create new forum with new account test", async () => {
