@@ -4,7 +4,11 @@ import { Post } from "../model/Post";
 
 const postSchema: Schema = new Schema({
 
-    id : Number,
+    id : {
+        type : Number,
+        unique : true,
+        required : true
+    },
 
     title: {
 

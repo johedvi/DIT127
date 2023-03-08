@@ -66,9 +66,9 @@ test("Post Service - Comment can be created on a post",async()=>{
 
     expect(response.comments.map((comment : Comment)=>comment.author)).toContain(findUser.username);
     expect(response.comments.map((comment : Comment)=>comment.content)).toContain(commentJson.content);
-    const getCommentId = response.comments[0].id;
 })
 
+// Ensure that a user can vote a comment
 test("Post Service - User can vote on a comment",async()=>{
     const getUser = await accountModel.findOne({username : user.username});
     const getComment = await commentModel.findOne({author : getUser?._id});
@@ -78,12 +78,35 @@ test("Post Service - User can vote on a comment",async()=>{
     // A different user should be able to upvote and be added to list of upvoters
     // The creator is added automatically on comment creation, should be indempotent
     const newUser = await accountModel.create(sndUser);
-    const response = await postService.voteComment(getComment.id,getUser.username,true);
-    const sndResponse = await postService.voteComment(getComment.id,newUser.username,true);
+    await postService.voteComment(getComment.id,getUser.username,true);
+    await postService.voteComment(getComment.id,newUser.username,true);
 
     const getUpdComment : Comment|null = await commentModel.findOne({id : getComment.id});
     if(getUpdComment===null){fail('Post Service - Failed to retrieve updated comment object')};
     // If equal then earlier author-upvote never succeeded - meaning its indempotent! (Which is good)
     expect(getUpdComment.upvoters).toEqual([getUser._id,newUser._id]);
+});
+
+// The second upvoter from before should be removed from list of upvoters when they downvote
+
+test("Post Service - User upvoting should delete them from downvotes",async()=>{
+    const getUser = await accountModel.findOne({username : user.username});
+    const getSndUser = await accountModel.findOne({username : sndUser.username});
+    const getComment = await commentModel.findOne({author : getUser?._id});
+    if(getUser===null){fail('Post Service - Failed to retrieve author user')};
+    if(getSndUser===null){fail('Post Service - Failed to retrieve ratee user')};
+    if(getComment===null){fail('Post Service - Failed to retrieve comment')};
+
+    // Ratee goes from upvote to downvote - should be removed from upvoters, added to downvoters
+    const response = await postService.voteComment(getComment.id,sndUser.username,false);
+    expect(response).toEqual(true);
+
+    const getUpdComment : Comment|null = await commentModel.findOne({id : getComment.id});
+    if(getUpdComment===null){fail('Post Service - Failed to retrieve updated comment')};
+
+    // Upvoters should only be the author
+    expect(getUpdComment.upvoters).toEqual([getUser._id]);
+    expect(getUpdComment.downvoters).toEqual([getSndUser._id]);
+
     await commentModel.findOneAndDelete({id : getComment.id});
-})
+});

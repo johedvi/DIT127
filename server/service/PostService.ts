@@ -98,17 +98,18 @@ class PostDBService implements IPostService{
      * upvoted and upvotes again then their vote is removed. If they previously upvoted and then downvotes then
      * it converts to a downvote (total difference of 2). Same applies if the user previously downvoted.
      * @param {number} commentId The ID of the comment the user is voting on
-     * @param {string} ratee The user who is voting
+     * @param {string} ratee The username of who is voting
      * @param {boolean} updown True is for Upvote, False is for Downvote
      * @returns True if voting succeeds, False otherwise
      */
     async voteComment(commentId : number, ratee : string, updown : boolean): Promise<Boolean> {
         const getUserId = await accountModel.findOne({username : ratee});
         if(getUserId===null){return false;} // User not found
-        const queryBy = (updown) ? {upvoters : getUserId} : {downvoters : getUserId};
-        const antiQueryBy = (updown) ? {downvoters : {_id : getUserId}} : {upvoters : {_id : getUserId}};
+        const queryBy = (updown) ? {upvoters : getUserId._id} : {downvoters : getUserId._id};
+        const antiQueryBy = (updown) ? {downvoters : getUserId._id} : {upvoters : getUserId._id};
         const updateQuery = {
-            $addToSet : queryBy
+            $addToSet : queryBy,
+            $pull : antiQueryBy
         };
         const response = await commentModel.findOneAndUpdate({id : commentId},updateQuery,{new : true})
         if(response===null){return false;}
