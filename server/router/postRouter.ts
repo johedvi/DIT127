@@ -7,7 +7,7 @@ import { postModel } from "../db/post.db";
 import { forumModel } from "../db/forum.db";
 import { accountModel } from "../db/account.db";
 import { makePostService } from "../service/PostService";
-import { makeForumService } from "../service/ForumService";
+import { makeForumService } from "../service/forumService";
 const postService = makePostService();
 const forumService = makeForumService();
 

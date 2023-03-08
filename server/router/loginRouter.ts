@@ -1,13 +1,18 @@
-import { makeAccountService } from "../service/accountService";
-import { IAccount, Account } from "../model/Account";
 import express, { Request, Response } from "express";
+import session from "express-session";
+import { makeAccountService } from "../service/accountService";
+import { Schema } from "mongoose";
 export const loginRouter = express.Router();
 
 const accountService = makeAccountService();
 
+interface Account {
+        username : string
+}
+
 type SessionRequest = {
         session : {
-                user ?: IAccount
+                user ?: Account
         }
 }
 
@@ -96,7 +101,7 @@ loginRouter.post("/", async(
  */
 loginRouter.put("/", async (
         req : Request<{},{},{username : string, password : string}> & SessionRequest, 
-        res : Response<IAccount | String>
+        res : Response<Account | String>
 ) => {
         try{
                 if(typeof (req.body.username) !== "string"){
