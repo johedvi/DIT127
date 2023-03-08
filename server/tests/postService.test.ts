@@ -16,11 +16,10 @@ const user = new Account('PostServiceUser','PostServicePassword');
 const forumJson = {title : 'Post Service Forum Test', content : 'Post Service Forum Description'};
 const postId = Date.now().valueOf();
 const postJson = {id : postId, title : 'Post Service Post Test', content : 'Post Service Post Content'};
-const comment = new Comment(user,"Post Service Test Comment");
+const commentJson = new Comment(user,"Post Service Test Comment");
 
 // Teardown & setup post service tests
 beforeAll(async()=>{
-    await commentModel.findOneAndDelete({id : comment.id});
     await postModel.findOneAndDelete({id : postId});
     await accountModel.findOneAndDelete({username : user.username});
     await forumModel.findOneAndDelete({title : forumJson.title});
@@ -60,9 +59,11 @@ test("Post Service - Comment can be created on a post",async()=>{
     const findUser = await accountModel.findOne({username : user.username});
     if(findUser===null){fail('Post Service - Failed to retrieve user')};
 
-    const response = await postService.submitComment(postId,findUser,'Post Service Comment Test');
+    const response = await postService.submitComment(postId,findUser,commentJson.content);
     if(response===false){fail('Post Service - Failed to comment on a post')};
 
-    expect(response.comments).toContain(comment);
-    //await commentModel.findOneAndDelete({id : getCommentId});
+    expect(response.comments.map((comment : Comment)=>comment.author)).toContain(findUser.username);
+    expect(response.comments.map((comment : Comment)=>comment.content)).toContain(commentJson.content);
+    const getCommentId = response.comments[0].id;
+    await commentModel.findOneAndDelete({id : getCommentId});
 })

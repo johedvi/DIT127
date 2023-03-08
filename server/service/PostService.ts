@@ -73,13 +73,8 @@ class PostDBService implements IPostService{
             return false;
         }
         const comment = new Comment(getAuthor,content);
-        console.log(comment);
         const createComment = await commentModel.create(comment);
-        console.log(createComment);
-        const t = await postModel.findOne({id : postId});
-        if(t===null){return false};
-        return t;
-        /*const updateQuery = {$push: {comments : createComment}};
+        const updateQuery = {$push: {comments : createComment}};
         const addCommentToPost = await postModel.findOneAndUpdate({id : postId},updateQuery,{new:true}).populate([{
             path : 'author',
             transform : a=> a = a.username
@@ -91,12 +86,11 @@ class PostDBService implements IPostService{
             },
             transform : c => c = {id : c.id, author : c.author, content : c.content, rating : c.rating()}
         }]);
-        console.log(addCommentToPost);
         // Check if post Update failed
         if(addCommentToPost===null){
             return false;
         }
-        return addCommentToPost;*/
+        return addCommentToPost;
     }
 
     /**
