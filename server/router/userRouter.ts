@@ -1,81 +1,34 @@
-import express, { Request, Response } from "express";
-import session from "express-session";
+import express, { Request, Response } from "express"
+import { Account, IAccount } from "../model/Account";
 import { makeAccountService } from "../service/accountService";
-import { Schema } from "mongoose";
-export const userRouter = express.Router();
-
 const accountService = makeAccountService();
 
-interface Account {
-        username : string
-}
+export const userRouter = express.Router();
+userRouter.use(express.json());
 
-type LoginRequest = Request & {
-        body: {
-                username : string
-                password : string
-        }
-        session : {
-                user ?: Account
-        }
-}
+/** @module UserRouter */
 
-/*  */  
-userRouter.get("/", async(
-        req : Request<{},{},{}>, 
-        res : Response
-        ) => {
-        try{
-                res.status(200).send("Blank page");
-        }catch(e: any){
-                res.status(500).send("Bad response from Login page - server error");
-        }
-});
 
-/* Log into an existing account */
-userRouter.post("/", async(
-        req : LoginRequest,
-        res : Response
-)=>{
-        try{
-                if(typeof(req.body.username)!=="string"){
-                        res.status(400).send(`Bad POST to login - username is not of type 'string'.`);
-                        return;
-                }
-                if(typeof(req.body.password)!=="string"){
-                        res.status(400).send(`Bad POST to login - password is not of type 'string'.`);
-                        return;
-                }
-                const userExists = await accountService.userLogin(req.body.username, req.body.password);
-                if(userExists===null){
-                        res.status(404).send(`Bad POST to login - user ${req.body.username} does not exist.`);
-                        return;
-                }
-                req.session.user = {username : userExists.username}; // Assign session ID / cookie to logged-in user.
-                res.status(200).send(userExists);
-        }catch(e:any){
-                res.status(500).send(e.message);
-        }
-});
+/** 
+ * Request to retrieve all subforums 
+ * @async
+ * @method GET /user/:id
+ * @returns {Array.<IForum>} Returns the available forums
+ * @throws {Internal} Error retrieving forums
+ */
 
-/* Create a new account */
-userRouter.put("/", async (req : Request<{},{},{username : string, password : string}>, res : Response<Account | String>) => {
-        try{
-                if(typeof (req.body.username) !== "string"){
-                        res.status(400).send(`Bad PUT to login - username is not of type 'string'.`);
-                        return;
-                }
-                if(typeof (req.body.password) !== "string"){
-                        res.status(400).send(`Bad PUT to login - password is not of type 'string'.`);
-                        return;
-                }
-                const accountCreationResult = await accountService.createAccount(req.body.username,req.body.password);
-                if(accountCreationResult===false){
-                        res.status(409).send(`Bad PUT to login - username ${req.body.username} is already taken.`);
-                        return;
-                }
-                res.status(201).send(accountCreationResult);
-        }catch(e:any){
-                res.status(500).send(e.message);
+userRouter.get('/:id', async(
+    req: Request<{ id: string }, {}, {}>,
+    res: Response<Array<IAccount> | string>
+) => {
+    try {
+        const account = await accountService.getUserInfo(req.params.id);
+        if (account==null) {
+            res.status(404).send("User not found");
+            return undefined;
         }
+        res.status(200).send(account.username);
+    } catch(e : any){
+        res.status(500).send(e.message);
+    }
 });
