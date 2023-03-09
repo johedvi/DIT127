@@ -13,6 +13,10 @@ export interface IAccountService {
 
     // Returns the users non-sensitive information, undefined otherwise
     getUserInfo(a : string) : Promise<undefined | IAccount>;
+
+    // Deletes the users account, clears contents of their comments and posts
+    // If they own a forum then it will be transfered to special admin account
+    deleteAccount(u : string, p : string) : Promise<boolean>;
 }
 
 /** @class */
@@ -74,6 +78,18 @@ class AccountDBService implements IAccountService {
             return undefined;
         }
         return response;
+    }
+
+    /**
+     * Deletes the user's account, clearing content from their posted posts & comments.
+     * Any forums they owned will have their ownership transferred to admin account.
+     * @async
+     * @param {string} username The specified user's username
+     * @param {string} password The password of the user's account
+     * @returns True if deletion is successful, False otherwise.
+     */
+    async deleteAccount(username : string, password : string) : Promise<boolean>{
+        return true;
     }
 }
 

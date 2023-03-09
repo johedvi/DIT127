@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import session from "express-session";
 import { makeAccountService } from "../service/accountService";
 import { Schema } from "mongoose";
+import { IAccount } from "../model/Account";
 export const loginRouter = express.Router();
 
 const accountService = makeAccountService();
@@ -61,7 +62,7 @@ loginRouter.get("/", async(
  */
 loginRouter.post("/", async(
         req : Request<{},{},{username : string, password : string}> & SessionRequest,
-        res : Response
+        res : Response<IAccount|string>
 )=>{
         try{
                 if(req.session.user!==undefined){
@@ -81,7 +82,7 @@ loginRouter.post("/", async(
                         res.status(404).send(`Bad POST to login - user ${req.body.username} does not exist.`);
                         return;
                 }
-                req.session.user = {username : userExists.username}; // Assign session ID / cookie to logged-in user.
+                req.session.user = userExists; // Assign session ID / cookie to logged-in user.
                 res.status(200).send(userExists);
         }catch(e:any){
                 res.status(500).send(e.message);

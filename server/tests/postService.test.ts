@@ -66,7 +66,7 @@ test("Post Service - Comment can be created on a post",async()=>{
 
     expect(response.comments.map((comment : Comment)=>comment.author)).toContain(findUser.username);
     expect(response.comments.map((comment : Comment)=>comment.content)).toContain(commentJson.content);
-})
+});
 
 // Ensure that a user can vote a comment
 test("Post Service - User can vote on a comment",async()=>{

@@ -1,15 +1,15 @@
 import express, { Request, Response } from "express";
 import { Post, IPost } from "../model/Post";
-import { Account } from "../model/Account";
-import { Comment } from "../model/Comment";
+import { IAccount } from "../model/Account";
 import { Forum } from "../model/Forum";
-import { postModel } from "../db/post.db";
 import { forumModel } from "../db/forum.db";
 import { accountModel } from "../db/account.db";
 import { makePostService } from "../service/postService";
 import { makeForumService } from "../service/forumService";
+import { makeAccountService } from "../service/accountService";
 const postService = makePostService();
 const forumService = makeForumService();
+const accountService = makeAccountService();
 
 
 /* MergeParams allows router to find "forumId" */
@@ -35,7 +35,7 @@ postRouter.get('/',async(
 ) => {
     try{
         /* Find if the given forum exists, if so retrieve its posts */
-        const exist = await forumModel.findOne({title : req.body.fid});
+        const exist = await forumService.findForum(req.body.fid);
         if(exist==null){
             res.status(404).send(`Forum ${req.body.fid} not found.`);
             return;
@@ -61,15 +61,15 @@ postRouter.put('/',async(
     req : Request<{},{},{fid : string, title : string, content : string}> &
     {
         session : {
-            user? : Account
+            user? : IAccount
         }
     },
     res : Response<Forum | String>
 ) =>{
     try{
         /* Check if forum exists */ 
-        const forumExists = await forumModel.findOne({title:req.body.fid});
-        if(forumExists==null){
+        const forumExists = await forumService.findForum(req.body.fid);
+        if(forumExists==undefined){
             res.status(404).send(`Forum ${req.body.fid} not found.`);
             return;
         }
@@ -79,23 +79,21 @@ postRouter.put('/',async(
             return;
         }
         /* Check if user exists */
-        const getUserId = await accountModel.findOne({username : req.session.user.username});
-        if(getUserId===null){
+        const getUserId = await accountService.getUserInfo(req.session.user.username);
+        if(getUserId===undefined){
             res.status(500).send(`Bad PUT request to /post --- User does not exist`);
             return;
         }
         /* Create post and add to list of posts to specified forum */
         const postId = Date.now().valueOf();
-        const newPost = {id : postId, title : req.body.title, content : req.body.content, author : getUserId, comments : []};
-        const getPost = await postModel.create(newPost);
-        const postObjectId = getPost._id;
-        const updateForumObject = await forumModel.findOneAndUpdate({title : req.body.fid},{ $push: {posts : postObjectId}},{new : true});
-        if(updateForumObject===null){
+        const createPost = new Post(postId,req.body.title,req.body.content,getUserId);
+        const updatedForumObject = await forumService.submitPost(req.body.fid,createPost);
+        if(updatedForumObject===false){
             res.status(500).send(`Error at updating forum posts`);
             return;
         }
         /* Forum successfully updated, return new forum object */
-        res.status(201).send(updateForumObject);
+        res.status(201).send(updatedForumObject);
     }catch(e:any){res.status(500).send(e.message);}
 });
 
@@ -139,7 +137,7 @@ postRouter.get("/:pid",async(
 postRouter.put("/:pid/comment", async(
     req : Request<{forumId : string, pid : number},{},{content : string}> & {
         session : {
-            user? : Account
+            user? : IAccount
         }
     },
     res : Response<IPost|String>
@@ -177,10 +175,10 @@ postRouter.put("/:pid/comment", async(
 postRouter.post("/:pid/comment", async(
     req : Request<{forumId : string, pid : number},{},{comment : number, vote : boolean}> & {
         session : {
-            user? : Account
+            user? : IAccount
         }
     },
-    res : Response<Boolean|String>
+    res : Response<String>
     )=>{
         const comment = req.body.comment;
         const vote = req.body.vote;
@@ -209,7 +207,7 @@ postRouter.post("/:pid/comment", async(
 postRouter.delete("/:pid/comment", async(
     req : Request<{forumId : string, pid : number},{},{comment : number, vote : boolean}> & {
         session : {
-            user? : Account
+            user? : IAccount
         }
     },
     res : Response<Boolean|String>

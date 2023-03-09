@@ -116,8 +116,12 @@ class PostDBService implements IPostService{
         return true;
     }
 
-
-     
+     /**
+     * Clears the 'Author' and Content field of a comment if done by an authorized user (author or admin)
+     * @async
+     * @param {number} commentId The comment's ID of which to remove comment author and content from
+     * @returns True if successful, False otherwise.
+     */
     async deleteComment(commentId : number): Promise<Boolean> {
         const update = {content: "deleted", raiting: "0"}
         const response = await commentModel.findOneAndUpdate({id : commentId, update },{new : true})

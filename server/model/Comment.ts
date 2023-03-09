@@ -11,6 +11,7 @@ export interface IComment {
     id      : Number;
     author  :   IAccount;
     content :   String;
+    rating : Number;
 }
 
 /**

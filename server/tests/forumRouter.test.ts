@@ -1,7 +1,6 @@
 import { Forum } from "../model/Forum";
 import * as SuperTest from "supertest";
 import { app } from "../index";
-import { conn } from "../db/conn";
 import { accountModel } from "../db/account.db";
 import { forumModel } from "../db/forum.db";
 
@@ -13,7 +12,6 @@ const forum = {title : 'ForumTest', description : 'Forum Router test description
 /* Restore the database - since other tests runs in parallel we want to only delete documents
 used in THIS suite as to not ruin other tests */
 beforeAll(async()=>{
-    conn.useDb('test');
     await accountModel.findOneAndDelete({username : user.username});
     await forumModel.findOneAndDelete({title : forum.title});
 })
