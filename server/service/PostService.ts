@@ -21,6 +21,8 @@ export interface IPostService {
     // Upvotes the comment on index n inside the post and returns true.
     // Returns false if no comment with index n.
     voteComment(cid : number, ratee : string, type : boolean) : Promise<Boolean>;
+
+    deleteComment(cid : number, user : IAccount) : Promise<Boolean>;
 }
 
 /** @class */
@@ -111,7 +113,7 @@ class PostDBService implements IPostService{
             $addToSet : queryBy,
             $pull : antiQueryBy
         };
-        const response = await commentModel.findOneAndUpdate({id : commentId},updateQuery,{new : true})
+        const response = await commentModel.findOneAndUpdate({id : commentId},updateQuery)
         if(response===null){return false;}
         return true;
     }
@@ -122,10 +124,11 @@ class PostDBService implements IPostService{
      * @param {number} commentId The comment's ID of which to remove comment author and content from
      * @returns True if successful, False otherwise.
      */
-    async deleteComment(commentId : number): Promise<Boolean> {
-        const update = {content: "deleted", raiting: "0"}
-        const response = await commentModel.findOneAndUpdate({id : commentId, update },{new : true})
-        console.log(response);
+    async deleteComment(commentId : number, user : IAccount): Promise<Boolean> {
+        const getDeletedId = await accountModel.findOneAndUpdate({username : '<deleted>'},{},{upsert: true, new : true});
+        if(getDeletedId===null){return false;} // Internal server error
+        const update = {author : getDeletedId._id, content: "This comment has been removed."}
+        const response = await commentModel.findOneAndUpdate({id : commentId, author : user},update,{new : true})
         if(response===null){return false;}
         return true;
     }

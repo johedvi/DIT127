@@ -80,7 +80,7 @@ function Navbar() {
 
 
 
-          <button className="btn btn-outline-secondary" type="submit">COGWHEEL</button>
+          <button className="btn btn-outline-secondary" type="submit">Settings</button>
           <SignInOut></SignInOut>
         </div>
       </div>

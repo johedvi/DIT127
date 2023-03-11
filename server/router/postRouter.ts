@@ -204,28 +204,48 @@ postRouter.post("/:pid/comment", async(
 
  //TODO
 
-postRouter.delete("/:pid/comment", async(
-    req : Request<{forumId : string, pid : number},{},{comment : number, vote : boolean}> & {
+postRouter.delete("/:pid/comment/:cid", async(
+    req : Request<{forumId : string, pid : number, cid : number},{},{}> & {
         session : {
             user? : IAccount
         }
     },
     res : Response<Boolean|String>
     )=>{
-        const comment = req.body.comment;
-        const vote = req.body.vote;
-        /* Type checking requests input */
-        if(typeof(comment)!=='number'||typeof(vote)!=='boolean'){
-            res.status(400).send(`Expected comment id of type number, vote of type boolean, got ${typeof(comment)} and ${typeof(vote)}`);
+        const forumId = req.params.forumId;
+        const postId = req.params.pid;
+        const commentId = req.params.cid;
+        const user = req.session.user;
+
+        /* Type checking requests input
+            Since they're parameters they're all of type string.
+         */
+        if(typeof(commentId)!=='string'){
+            res.status(400).send(`Expected comment id of type string, got ${typeof(commentId)}`);
             return;
         }
+        if(typeof(forumId)!=='string'){
+            res.status(400).send(`Expected forum id of type string, got ${typeof(forumId)}`);
+            return;
+        }
+        if(typeof(postId)!=='string'){
+            res.status(400).send(`Expected forum id of type string, got ${typeof(postId)}`);
+            return;
+        }
+
         /* Check if user is signed in / has a session */
-        if(req.session.user===undefined){
+        if(user===undefined){
             res.status(401).send(`User must be logged in to vote`);
             return;
         }
-  
-
+        
+        const deleteComment = await postService.deleteComment(commentId,user);
+        // User did not create the comment / unauthorized (or comment does not exist)
+        if(deleteComment===false){
+            res.status(403).send(`User is not authorized for this action`);
+            return;
+        }
+        res.status(200).send(`Comment has been removed`);
     }
 )
 

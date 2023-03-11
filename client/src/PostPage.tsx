@@ -36,14 +36,15 @@ function App() {
     }
 
     async function deleteComment(commentId : number) {
-        const response = await axios.delete('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment',{data:
-           commentId,
-        })
-        if(response.status===200){
-            getPost();
-            return;
+        const response = await axios.delete('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment/'+commentId)
+        switch(response.status){
+            case 200 : getPost();break; // Comment deleted
+            case 400 : alert(`Something went wrong, please try again`);break; // Malformed input (params)
+            case 401 : alert(`You must be logged in to delete your comment.`);break; // Not logged in
+            case 403 : alert(`You do not have permission for this command.`);break; // Not author/admin
+            default : alert("Something went wrong. Please try again");
         }
-        alert("Something went wrong. Please try again");
+        return;
     }
 
     /* Fetches new/updated Post object */
@@ -51,7 +52,6 @@ function App() {
         const getPost = (postId == null) ? "" : postId;
         const getForum = (forumId == null) ? "" : forumId;
         const response = await axios.get("http://localhost:8080/forum/" + getForum + "/post/" + getPost);
-        console.log(response.data);
         setPosts(response.data);
     }
 
@@ -61,8 +61,8 @@ function App() {
 
     function DisplayComment(comment: IComment) {
         return <li className="comment"><a href={"/profile/"+comment.author}>{"posted by " + comment.author}</a> 
-         <p className="delete"><a href="#" onClick = {e=>upVote(comment.id,true)}>{String.fromCharCode(10006)}</a></p>
-        <p className="rating"><a href="#" onClick={e=>deleteComment(comment.id)}>{String.fromCharCode(8593)}</a>
+         <p className="delete"><a href="#" onClick = {e=>deleteComment(comment.id)}>{String.fromCharCode(10006)}</a></p>
+        <p className="rating"><a href="#" onClick={e=>upVote(comment.id,true)}>{String.fromCharCode(8593)}</a>
         {" Rating: " + comment.rating + " "}<a href="#" onClick={e=>upVote(comment.id,false)}>{String.fromCharCode(8595)}</a></p>
         <p>{comment.content}</p>
         </li>
