@@ -22,7 +22,6 @@ function App() {
 
   async function updateForums() {
     const response = await axios.get<Forum[]>("http://localhost:8080/forum/", { data: { itemId: searchName } });
-    console.log(response)
      setForums(response.data);
   }
   useEffect(() => {

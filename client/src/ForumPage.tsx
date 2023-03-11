@@ -25,7 +25,6 @@ function App() {
 
   async function updateForums(){  
     const response = await axios.get<Forum>("http://localhost:8080/forum/"+forumId?.toString());
-    console.log(response);
     setForums(response.data);
   }
 

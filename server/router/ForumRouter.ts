@@ -138,8 +138,6 @@ forumRouter.delete('/:id',async(
             res.status(404).send(`Bad DELETE call to ${req.originalUrl} --- forum ${req.params.id} does not exist`);
             return;
         }
-        console.log(getForum.author);
-        console.log(req.session.user);
     }catch(e:any){
         res.status(500).send(`Internal server error - Unable to delete forum ${req.params.id}`);
     }

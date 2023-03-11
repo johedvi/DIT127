@@ -8,7 +8,9 @@ import { forumModel } from "../db/forum.db";
 import { accountModel } from "../db/account.db";
 import { commentModel } from "../db/comment.db";
 import { Comment, IComment } from "../model/Comment";
-const request = SuperTest.default(app);
+
+const server = app.listen(0);
+const request = SuperTest.default(server);
 
 // These objects won't be sent to the router itself, but we want to fetch these values
 const account = new Account('PostRouterUser','PostRouterPass');
@@ -34,6 +36,10 @@ beforeAll(async()=>{
     const newForum = new Forum(forum.title,forum.description,newUser);
     await forumModel.create(newForum);
 });
+
+afterAll(async()=>{
+    server.close();
+})
 
 // Ensure a user can create several posts (in case bug occurs for >1 posts)
 test("Post Router - Create posts in a forum",async()=>{

@@ -4,7 +4,8 @@ import { app } from "../index";
 import { accountModel } from "../db/account.db";
 import { forumModel } from "../db/forum.db";
 
-const request = SuperTest.default(app);
+const server = app.listen(0);
+const request = SuperTest.default(server);
 /* Some global values to use in our tests in this suite */
 const user = {username : "ForumRouterUser", password : "ForumRouterPass"};
 const forum = {title : 'ForumTest', description : 'Forum Router test description'};
@@ -14,7 +15,7 @@ used in THIS suite as to not ruin other tests */
 beforeAll(async()=>{
     await accountModel.findOneAndDelete({username : user.username});
     await forumModel.findOneAndDelete({title : forum.title});
-})
+});
 
 test("Forum Router - Create new forum with new account test", async () => {
     // Create the author of the forum
@@ -37,6 +38,9 @@ test("Forum Router - Create new forum with new account test", async () => {
     expect(res2.body.map((forum : Forum) => forum.author)).toContain(user.username);
 });
 
+afterAll(async()=>{
+    server.close();
+})
 
 test("Forum Router - Retrieve specific forum test", async() => {
     // Get forum from previous test

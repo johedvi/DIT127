@@ -27,5 +27,5 @@ app.use("/forum",forumRouter); // Handle all /forum requests
 app.use("/forum/:forumId/post", postRouter); // Handle post / comment requests
 app.use("/login",loginRouter);
 app.use("/settings",settingsRouter);
-app.use("/user",userRouter);
+app.use("/profile",userRouter);
 app.listen(8080);

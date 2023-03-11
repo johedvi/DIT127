@@ -2,7 +2,9 @@ import * as SuperTest from "supertest";
 import { app } from "../index";
 import { Account } from "../model/Account";
 import { accountModel } from "../db/account.db";
-const request = SuperTest.default(app);
+
+const server = app.listen(0);
+const request = SuperTest.default(server);
 
 const user = new Account('LoginRouterUser','LoginRouterPassword');
 
@@ -10,6 +12,10 @@ const user = new Account('LoginRouterUser','LoginRouterPassword');
 beforeAll(async()=>{
     await accountModel.findOneAndDelete({username : user.username});
 });
+
+afterAll(async()=>{
+    server.close();
+})
 
 // Creating an account will assign the request with the corresponding session-cookie
 test("Login Router - User can create an account and be assigned a session",async()=>{

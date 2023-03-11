@@ -30,12 +30,12 @@ class ForumDBService implements IForumService{
     }
 
     /**
-     * Retrieves all existing forums.
+     * Retrieves all existing forums as a list of IForum objects.
      * @async
      * @returns {Promise<Array.<IForum>>} Returns an array of available Forums
      */
     async getForums(): Promise<IForum[]> {
-        const response = await forumModel.find().populate('author');
+        const response = await forumModel.find().populate('author','username');
         const newForums = response.map(function(i){
             return {title : i.title, description : i.description, author : i.author.username}
         });
