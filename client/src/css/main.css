@@ -10,3 +10,14 @@ body {
 .maintopic last-child{
   margin-bottom:none;
 }
+
+.linkStyle {
+  text-decoration: none;
+  color: #212529;
+}
+
+.authorLink {
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0;
+}

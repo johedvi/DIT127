@@ -14,7 +14,7 @@ app.use(session({
     resave : true,
     cookie : {
         maxAge : 1000*60*60*24, // Session lives for 24 hours
-        secure : true
+        //secure : true // Used for only using cookies in HTTPS
     },
     saveUninitialized : true
 }));

@@ -35,9 +35,10 @@ function App() {
   return (
     require("./css/forumPage.css"),
     <>
-      <div>
+      <div id="forumPage">
       <h2>{"Welcome to - " + page?.title}</h2>
-      <h3>{page?.description + " - " + page?.author}</h3>
+      <h3>{page?.description + " - "}<a className="linkStyle" href={"/profile/"+page?.author}><p className='authorLink'>{page?.author}</p></a></h3>
+      
         <form id="createPost" onSubmit={async e => {
           e.preventDefault();
           await axios.put("http://localhost:8080/forum/"+forumId+"/post", {fid : forumId, title: postTitle, content: postBody}); updateForums();
@@ -75,8 +76,8 @@ function App() {
   function DisplayPosts(post : Post) {
     return (
     <li className="list-group-item d-flex justify-content-between align-items-center">
-      <a href={"/forum/"+page?.title+"/post/"+post.id}>{post.title}</a>
-      <a href={"/profile/"+post.author}>{"posted by " + post.author}</a>
+      <a className="linkStyle" href={"/forum/"+page?.title+"/post/"+post.id}>{post.title}</a>
+      <a className="linkStyle" href={"/profile/"+post.author}>{"posted by - "}<p className='authorLink'>{post.author}</p></a>
     </li>
   )}
 }

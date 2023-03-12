@@ -33,8 +33,7 @@ function App() {
         }catch(e:any){
             switch(e.response.status){
                 case 400 : alert(`Something went wrong, please try again`);break; // Malformed input (params)
-                case 401 : alert(`You must be logged in to delete your comment.`);break; // Not logged in
-                case 500 : //Server error, display same alert as below
+                case 401 : alert(`You must be logged in to vote on a comment.`);break; // Not logged in
                 default: alert("Something went wrong. Please try again");
             }
         }
@@ -67,7 +66,7 @@ function App() {
     }, [])
 
     function DisplayComment(comment: IComment) {
-        return <li className="comment"><a href={"/profile/"+comment.author}>{"posted by " + comment.author}</a> 
+        return <li className="comment"><a className="linkStyle" href={"/profile/"+comment.author}>{"posted by - "}<p className='authorLink'>{comment.author}</p></a> 
          <p className="delete"><a href="#" onClick = {e=>deleteComment(comment.id)}>{String.fromCharCode(10006)}</a></p>
         <p className="rating"><a href="#" onClick={e=>upVote(comment.id,true)}>{String.fromCharCode(8593)}</a>
         {" Rating: " + comment.rating + " "}<a href="#" onClick={e=>upVote(comment.id,false)}>{String.fromCharCode(8595)}</a></p>
@@ -79,7 +78,7 @@ function App() {
         require("./css/postPage.css"),
         <div>
             <h1>{posts.title}</h1>
-            <h3>{"Posted by " + posts.author}</h3>
+            <h3>{"posted by - "}<p className='authorLink'>{posts.author}</p></h3>
             <div className="post">
                 <p className="postContent">{posts.content}</p>
             </div>
