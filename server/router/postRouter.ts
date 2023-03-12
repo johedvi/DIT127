@@ -235,7 +235,7 @@ postRouter.delete("/:pid/comment/:cid", async(
 
         /* Check if user is signed in / has a session */
         if(user===undefined){
-            res.status(401).send(`User must be logged in to vote`);
+            res.status(401).send(`You must be signed in to perform this action.`);
             return;
         }
         

@@ -1,5 +1,5 @@
 import * as SuperTest from "supertest";
-import { app } from "../index";
+import { testApp } from "../indextest";
 import { Post } from "../model/Post";
 import { Forum } from "../model/Forum";
 import { Account } from "../model/Account";
@@ -9,7 +9,7 @@ import { accountModel } from "../db/account.db";
 import { commentModel } from "../db/comment.db";
 import { Comment, IComment } from "../model/Comment";
 
-const server = app.listen(0);
+const server = testApp.listen(0);
 const request = SuperTest.default(server);
 
 // These objects won't be sent to the router itself, but we want to fetch these values
@@ -37,6 +37,7 @@ beforeAll(async()=>{
     await forumModel.create(newForum);
 });
 
+// Close the server
 afterAll(async()=>{
     server.close();
 })

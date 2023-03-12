@@ -1,9 +1,9 @@
 import * as SuperTest from "supertest";
-import { app } from "../index";
+import { testApp } from "../indextest";
 import { Account } from "../model/Account";
 import { accountModel } from "../db/account.db";
 
-const server = app.listen(0);
+const server = testApp.listen(0);
 const request = SuperTest.default(server);
 
 const user = new Account('LoginRouterUser','LoginRouterPassword');
@@ -13,6 +13,7 @@ beforeAll(async()=>{
     await accountModel.findOneAndDelete({username : user.username});
 });
 
+// Close the server
 afterAll(async()=>{
     server.close();
 })

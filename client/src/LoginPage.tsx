@@ -200,12 +200,16 @@ export default function (props: {}) {
             //var bcrypt = require('bcryptjs');
             //var salt = userName;
             //var hashedPassWord = bcrypt.hashSync(passWord, salt)
+            if (nameError !== "" || passError !== "") {
+              alert(`Please fix the errors before submitting.`);
+              return;
+            }
             await axios.put("http://localhost:8080/login",
               {
                 username: userName,
                 password: passWord
               })
-            navigate("/forum");
+            navigate(-1); // Returns to previous page
           } catch (e: any) {
             switch (e.response.status) {
               case 400: alert("Username or password contains illegal characters. Please try again."); break;

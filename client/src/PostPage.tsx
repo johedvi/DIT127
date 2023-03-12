@@ -24,27 +24,34 @@ function App() {
     const [posts, setPosts] = useState<IPost>(defaultPost);
 
     async function upVote(commentId : number, type : boolean) {
-        const response = await axios.post('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment',{
-            comment : commentId,
-            vote : type
-        })
-        if(response.status===200){
+        try{
+            await axios.post('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment',{
+                comment : commentId,
+                vote : type
+            });
             getPost();
-            return;
+        }catch(e:any){
+            switch(e.response.status){
+                case 400 : alert(`Something went wrong, please try again`);break; // Malformed input (params)
+                case 401 : alert(`You must be logged in to delete your comment.`);break; // Not logged in
+                case 500 : //Server error, display same alert as below
+                default: alert("Something went wrong. Please try again");
+            }
         }
-        alert("Something went wrong. Please try again");
     }
 
     async function deleteComment(commentId : number) {
-        const response = await axios.delete('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment/'+commentId)
-        switch(response.status){
-            case 200 : getPost();break; // Comment deleted
-            case 400 : alert(`Something went wrong, please try again`);break; // Malformed input (params)
-            case 401 : alert(`You must be logged in to delete your comment.`);break; // Not logged in
-            case 403 : alert(`You do not have permission for this command.`);break; // Not author/admin
-            default : alert("Something went wrong. Please try again");
+        try{
+            await axios.delete('http://localhost:8080/forum/'+forumId+'/post/'+postId+'/comment/'+commentId);
+            getPost();
+        }catch(e:any){
+            switch(e.response.status){
+                case 400 : alert(`Something went wrong, please try again`);break; // Malformed input (params)
+                case 401 : alert(`You must be logged in to delete your comment.`);break; // Not logged in
+                case 403 : alert(`You do not have permission for this command.`);break; // Not author/admin
+                default : alert("Something went wrong. Please try again");
+            }
         }
-        return;
     }
 
     /* Fetches new/updated Post object */
@@ -87,7 +94,7 @@ function App() {
                 } catch (e: any) {
                     switch(e.response.status){
                         case 401 : alert("Please sign in before commenting"); break;
-                        default : alert("Unexpected error when commenting"); break;
+                        default : alert("Unexpected error when commenting. Please try again"); break;
                     }
                 }
             }}>
@@ -108,9 +115,5 @@ function App() {
             />)}
         </div>
     );
-}
-
-async function downVote() {
-    // ....... some call to router?
 }
 export default App;

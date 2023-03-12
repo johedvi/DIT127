@@ -127,8 +127,10 @@ class PostDBService implements IPostService{
     async deleteComment(commentId : number, user : IAccount): Promise<Boolean> {
         const getDeletedId = await accountModel.findOneAndUpdate({username : '<deleted>'},{},{upsert: true, new : true});
         if(getDeletedId===null){return false;} // Internal server error
+        const getUserId = await accountModel.findOne({username : user.username});
+        if(getUserId===null){return false;} // Not authorised for this action
         const update = {author : getDeletedId._id, content: "This comment has been removed."}
-        const response = await commentModel.findOneAndUpdate({id : commentId, author : user},update,{new : true})
+        const response = await commentModel.findOneAndUpdate({id : commentId, author : getUserId._id},update)
         if(response===null){return false;}
         return true;
     }

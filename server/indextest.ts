@@ -6,27 +6,26 @@ import { settingsRouter } from "./router/settingsRouter";
 import { userRouter } from "./router/userRouter";
 import session from "express-session";
 import cors from "cors";
-export const app = express(); // The production server
+export const testApp = express(); // The development server (different ports required for parallel Router testing)
 
-/* APP FOR PRODUCTION */
-app.use(session({
+/* APP FOR TESTING */
+testApp.use(session({
     secret : "tempsecretkey", // Replace with .env file
     resave : true,
     cookie : {
         maxAge : 1000*60*60*24, // Session lives for 24 hours
-        secure : true
+        secure : false          // Allows for super-test to bypass session (only use during development)
     },
     saveUninitialized : true
 }));
-app.use(cors({
+testApp.use(cors({
     origin : true,
     credentials : true
 }));
 /* Allows the use of JSON in response/request */
-app.use(express.json());
-app.use("/forum",forumRouter); // Handle all /forum requests
-app.use("/forum/:forumId/post", postRouter); // Handle post / comment requests
-app.use("/login",loginRouter); // Sign up, log in, log out
-app.use("/settings",settingsRouter);
-app.use("/profile",userRouter);
-app.listen(8080);
+testApp.use(express.json());
+testApp.use("/forum",forumRouter);               // Handle all /forum requests
+testApp.use("/forum/:forumId/post", postRouter); // Handle post / comment requests
+testApp.use("/login",loginRouter);               // Sign up, log in, log out
+testApp.use("/settings",settingsRouter);
+testApp.use("/profile",userRouter);

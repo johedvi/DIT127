@@ -1,10 +1,10 @@
 import { Forum } from "../model/Forum";
 import * as SuperTest from "supertest";
-import { app } from "../index";
+import { testApp } from "../indextest";
 import { accountModel } from "../db/account.db";
 import { forumModel } from "../db/forum.db";
 
-const server = app.listen(0);
+const server = testApp.listen(0);
 const request = SuperTest.default(server);
 /* Some global values to use in our tests in this suite */
 const user = {username : "ForumRouterUser", password : "ForumRouterPass"};
@@ -16,6 +16,11 @@ beforeAll(async()=>{
     await accountModel.findOneAndDelete({username : user.username});
     await forumModel.findOneAndDelete({title : forum.title});
 });
+
+// Close the server
+afterAll(async()=>{
+    server.close();
+})
 
 test("Forum Router - Create new forum with new account test", async () => {
     // Create the author of the forum
