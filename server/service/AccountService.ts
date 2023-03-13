@@ -21,6 +21,27 @@ export interface IAccountService {
 
 /** @class */
 class AccountDBService implements IAccountService {
+
+    // Matches the given username against a regular expression.
+    // Returns True if it is allowed, False otherwise.
+    matchUsername(username : string) : Boolean{
+        const regexname = RegExp("[^A-Za-z0-9]"); // Username. Returns true if it contains illegal characters
+        if(regexname.test(username)||username.length<3){ // Username must match regex & length criteria
+            return false;
+        }
+        return true;
+    }
+
+    // Matches the given password against a regular expression.
+    // Returns True if it is allowed, False otherwise.
+    matchPassword(password : string) : Boolean{
+        const regexpass = RegExp("[^A-Za-z0-9$#&_!-]"); // Password. Returns true if it contains illegal characters
+        if(regexpass.test(password)||password.length<8){ // Password must match regex & length criteria
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Creates a new Account document in the database with the specified username and password.
      * Returns an Account object if successful, false otherwise.
@@ -30,6 +51,9 @@ class AccountDBService implements IAccountService {
      * @returns {Promise<Account | false>} If creation successful, return Account
      */
     async createAccount(u: string, p: string): Promise<false | IAccount> {
+        if(!this.matchUsername(u)||!this.matchPassword(p)){
+            return false;
+        }
         const newAccount = new Account(u,p);
         const response = (await accountModel.create(newAccount)).username
         if(response===null){ // Account already exists
@@ -46,7 +70,11 @@ class AccountDBService implements IAccountService {
      * @param {string} p The password for the account
      * @returns {Promise<IAccount | null>} Return the account if it exists, otherwise null
      */
-    async userLogin(u : String, p : String): Promise<null | IAccount> {
+    async userLogin(u : string, p : string): Promise<null | IAccount> {
+        // Validate the input against the regular expression criterias
+        if(!this.matchUsername(u)||!this.matchPassword(p)){
+            return null;
+        }
         const reply = await accountModel.findOne({username : u, password : p},'username');
         return reply;
     }
@@ -60,6 +88,10 @@ class AccountDBService implements IAccountService {
      * @returns {Promise<boolean>} Returns true if account exists, otherwise null
      */
     async changePassword(a: string, op: string, np: string): Promise<boolean> {
+        // Validate username, old & new password against regular expression criterias
+        if(!this.matchUsername(a)||!this.matchPassword(op)||!this.matchPassword(np)){
+            return false;
+        }
         const response = await accountModel.findOneAndUpdate({username : a, password : op},{password: np},{new : true});
         if(response===null){return false;} // Account doesn't exist
         return true;
@@ -73,6 +105,10 @@ class AccountDBService implements IAccountService {
      * @returns The user information if found, undefined otherwise
      */
     async getUserInfo(username: string): Promise<Account | undefined> {
+        // Validate username input against regular expression criteria
+        if(!this.matchUsername(username)){
+            return undefined;
+        }
         const response = await accountModel.findOne({username : username}).select(['username']);
         if(response===null){
             return undefined;
