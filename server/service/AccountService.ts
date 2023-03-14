@@ -125,7 +125,7 @@ class AccountDBService implements IAccountService {
      * @returns True if deletion is successful, False otherwise.
      */
     async deleteAccount(username : string, password : string) : Promise<boolean>{
-        return true;
+        return false; // Not implemented
     }
 }
 
