@@ -142,11 +142,3 @@ forumRouter.delete('/:id',async(
         res.status(500).send(`Internal server error - Unable to delete forum ${req.params.id}`);
     }
 })
-
-/*
-COMMON RESPONSES
-if(req.params.id==null){
-            res.status(400).send(`Bad GET call to ${req.originalUrl} --- missing id param`);
-            return;
-        }
-*/
