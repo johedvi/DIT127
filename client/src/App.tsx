@@ -13,6 +13,7 @@ import Homepage from './homepage';
 import LoginPage from './LoginPage';
 import Merch from './Merch';
 import SearchPage from './SearchPage';
+import Settings from './SettingsPage';
 axios.defaults.withCredentials = true; // For session cookies
 
 class Start extends React.Component {
@@ -30,6 +31,7 @@ class Start extends React.Component {
             <Route path="/forum/:forumId/post/:postId" element={<PostPage />}></Route>
             <Route path="/login" element={<LoginPage />}></Route>
             <Route path="/search" element={<SearchPage/>}></Route>
+            <Route path="/settings" element={<Settings/>}></Route>
           </Routes>
         </Router>
       </div>

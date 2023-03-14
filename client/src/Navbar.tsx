@@ -76,11 +76,9 @@ function Navbar() {
           <form action="/search">
             <input className="btn btn-outline-primary" type="submit" value="Search" />
           </form>
-
-
-
-
-          <button className="btn btn-outline-secondary" type="submit">Settings</button>
+          <form action={(userStatus===undefined) ? "/login" : "/settings"}>
+            <input className="btn btn-outline-secondary" type="submit" value="Settings" />
+          </form>
           <SignInOut></SignInOut>
         </div>
       </div>

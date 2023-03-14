@@ -201,9 +201,17 @@ postRouter.post("/:pid/comment", async(
     }
 )
 
-
- //TODO
-
+/** 
+ * Upvotes / downvotes a comment on a post
+ * @async
+ * @method DELETE /forum/:forumId/post/:pid/comment/:cid
+ * @param {string} forumId - Forum id
+ * @param {string} pid - Post id
+ * @param {string} cid - Comment ID
+ * @throws Bad POST call - Bad input
+ * @throws Bad POST call - User not logged in
+ * @throws {Internal} Server error
+ */
 postRouter.delete("/:pid/comment/:cid", async(
     req : Request<{forumId : string, pid : number, cid : number},{},{}> & {
         session : {

@@ -22,7 +22,11 @@ export interface IPostService {
     // Returns false if no comment with index n.
     voteComment(cid : number, ratee : string, type : boolean) : Promise<Boolean>;
 
+    // Blanks out the author and content field of a comment
     deleteComment(cid : number, user : IAccount) : Promise<Boolean>;
+
+    // Deletes a comment in the database entirely.
+    DBdeleteComment(pid : number, cid : number) : Promise<Boolean>
 }
 
 /** @class */
@@ -132,6 +136,24 @@ class PostDBService implements IPostService{
         const update = {author : getDeletedId._id, content: "This comment has been removed."}
         const response = await commentModel.findOneAndUpdate({id : commentId, author : getUserId._id},update)
         if(response===null){return false;}
+        return true;
+    }
+
+    /**
+     * Removes the comment from the database itself, and removes it from the list of comments of the post
+     * it was made on.
+     * @param postId The ID of the post the comment exists on
+     * @param commentId The ID of the comment to be deleted
+     * @returns True if removal and update of post object is successful, False otherwise.
+     */
+    async DBdeleteComment(postId : number, commentId : number) : Promise<Boolean>{
+        console.log(commentId);
+        const response = await commentModel.findOneAndDelete({id : commentId});
+        console.log(response);
+        if(response===null){return false;}
+        const deleteFromPost = await postModel.findOneAndUpdate({id : postId},{$pull : {comments : response._id}});
+        if(deleteFromPost===null){return false;}
+        console.log(deleteFromPost);
         return true;
     }
 }

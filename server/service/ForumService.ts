@@ -4,6 +4,7 @@ import { Account } from "../model/Account";
 import { forumModel } from "../db/forum.db"
 import { postModel } from "../db/post.db";
 import { accountModel } from "../db/account.db";
+import { commentModel } from "../db/comment.db";
 
 /* Populate() */
 
@@ -121,6 +122,22 @@ class ForumDBService implements IForumService{
             return false;
         }
         return result;
+    }
+    
+    async deletePost(forum : string, post : number) : Promise<false | Forum>{
+        const response = await postModel.findOne({id : post});
+        if(response===null){return false;} // Post does not exist
+        response.comments.forEach(async(element) => {
+            console.log(element);
+            await commentModel.findByIdAndDelete(element);
+
+        });
+        const deletePost = await postModel.findOneAndDelete({id : post});
+        if(deletePost===null){return false;} // Something has gone wrong between first find and now
+        const removePostFromForum = await forumModel.findOneAndUpdate({title : forum},{$pull : {posts : post}},{new:true});
+        console.log(removePostFromForum);
+        if(removePostFromForum===null){return false;}
+        return removePostFromForum;
     }
 }
 export function makeForumService() : IForumService{

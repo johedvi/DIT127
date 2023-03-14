@@ -1,5 +1,13 @@
 import { IAccount, Account } from "../model/Account";
 import { accountModel } from "../db/account.db";
+
+// Imports below are used for deletion of the account
+import { commentModel } from "../db/comment.db";
+import { makePostService } from "./postService";
+import { postModel } from "../db/post.db";
+import { forumModel } from "../db/forum.db";
+const postService = makePostService(); // Used for account deletion (clear comments & posts)
+
 export interface IAccountService {
     /* Create an account with a unique username */
     createAccount(u : string, p : string) : Promise<false | IAccount>;
@@ -125,7 +133,43 @@ class AccountDBService implements IAccountService {
      * @returns True if deletion is successful, False otherwise.
      */
     async deleteAccount(username : string, password : string) : Promise<boolean>{
-        return false; // Not implemented
+        // Validate input against regex
+        if(!this.matchUsername(username)||!this.matchPassword(password)){
+            return false;
+        }
+        const getUserId = await accountModel.findOne({username : username, password : password});
+        if(getUserId===null){return false;} // Account does not exist
+
+        // Clear all comments from this user
+        const getUserComments = await commentModel.find({author : getUserId._id});
+        getUserComments.forEach(async (comment)=>{
+            await postService.deleteComment(comment.id,getUserId);
+        });
+
+        // Delete all posts from this user (not clear, actual delete along with potential comments)
+        const getUserPosts = await postModel.find({author : getUserId._id});
+        getUserPosts.forEach(async (post)=>{
+            await commentModel.deleteMany({_id : {$in : post.comments}});
+            await postModel.findByIdAndDelete({_id : post._id});
+        });
+
+        // Remove the posts from lists of posts on forums
+        const removePostsFromForum = await forumModel.updateMany({posts : {$in : getUserPosts}},{$pullAll : {posts : getUserPosts}});
+
+        // Clear forum ownership field for every forum this user has created
+        // In the future: Transfer ownership to a forum moderator (i.e next of heir)
+        // getDeleted is the DB account to display author as '<deleted>'. A user is unable to have this name -
+        // since it goes against the regex constraints.
+        const getDeletedId = await accountModel.findOneAndUpdate({username : '<deleted>'},{},{upsert: true, new : true});
+        const getUserForums = await forumModel.find({author : getUserId._id});
+        getUserForums.forEach(async (forum)=>{
+            await forumModel.findByIdAndUpdate({_id : forum._id},{$pull : {users : getUserId._id}, author : getDeletedId._id});
+        });
+
+        // Lastly, delete the account of the user itself
+        const deleted = await accountModel.findByIdAndDelete(getUserId._id);
+        if(deleted===null){return false;} // Failed to delete the account
+        return true;
     }
 }
 
