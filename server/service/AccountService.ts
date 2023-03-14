@@ -137,6 +137,7 @@ class AccountDBService implements IAccountService {
         if(!this.matchUsername(username)||!this.matchPassword(password)){
             return false;
         }
+
         const getUserId = await accountModel.findOne({username : username, password : password});
         if(getUserId===null){return false;} // Account does not exist
 
@@ -155,7 +156,6 @@ class AccountDBService implements IAccountService {
 
         // Remove the posts from lists of posts on forums
         const removePostsFromForum = await forumModel.updateMany({posts : {$in : getUserPosts}},{$pullAll : {posts : getUserPosts}});
-
         // Clear forum ownership field for every forum this user has created
         // In the future: Transfer ownership to a forum moderator (i.e next of heir)
         // getDeleted is the DB account to display author as '<deleted>'. A user is unable to have this name -
@@ -168,6 +168,7 @@ class AccountDBService implements IAccountService {
 
         // Lastly, delete the account of the user itself
         const deleted = await accountModel.findByIdAndDelete(getUserId._id);
+
         if(deleted===null){return false;} // Failed to delete the account
         return true;
     }

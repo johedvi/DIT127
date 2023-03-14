@@ -64,8 +64,9 @@ settingsRouter.post("/delete",async(
             res.status(500).send("Unexpected error at account deletion. Please notify staff");
             return;
         }
+        req.session.destroy;
         res.status(200).send("Account successfully deleted");
     }catch(e:any){
-
+        res.status(500).send("Unexpected error at account deletion. Please notify staff");
     }
 })
